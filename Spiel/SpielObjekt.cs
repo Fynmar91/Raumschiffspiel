@@ -79,7 +79,7 @@ namespace Spiel
 
 		public Asteroid(Canvas zeichenflaeche, int multiplier)
 			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
-					(zufall.NextDouble() - 0.5) * 400d, (zufall.NextDouble() - 0.5) * 400d)
+					(zufall.NextDouble() - 0.5) * 400d * (1 + multiplier / 8), (zufall.NextDouble() - 0.5) * 400d * (1 + multiplier / 8))
 		{
 			if (MyX - zeichenflaeche.ActualWidth < MyX)
 			{
@@ -128,7 +128,7 @@ namespace Spiel
 			}
 			umriss.Fill = Brushes.Gray;
 
-			leben = 10 + multiplier / 4;
+			leben = multiplier / 8 + 10;
 		}
 
 		public override void Zeichne(Canvas zeichenflaeche)
@@ -162,7 +162,7 @@ namespace Spiel
 			umriss.Points.Add(new Point(0d, -15d));
 			umriss.Points.Add(new Point(10d, 10d));
 			umriss.Points.Add(new Point(-10d, 10d));
-			umriss.Fill = Brushes.Red;
+			umriss.Fill = Brushes.White;
 		}
 
 		public override void Zeichne(Canvas zeichenflaeche)
@@ -186,13 +186,13 @@ namespace Spiel
 	{
 		Ellipse umriss = new Ellipse();
 
-		public PhotonenTorpedo(Raumschiff raumschiff, int abweichung, Color color)
+		public PhotonenTorpedo(Raumschiff raumschiff, int abweichung, Color fabe, double geschwindigkeit = 1)
 			: base(raumschiff.MyX, raumschiff.MyY,
-					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500d, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500d)
+					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500d * geschwindigkeit, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500d* geschwindigkeit)
 		{
 			umriss.Width = 3d;
 			umriss.Height = 10d;
-			umriss.Fill = new SolidColorBrush(color);
+			umriss.Fill = new SolidColorBrush(fabe);
 			umriss.RenderTransform = raumschiff.Rotation;
 		}
 
