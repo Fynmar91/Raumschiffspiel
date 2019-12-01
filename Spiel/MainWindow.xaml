@@ -1,0 +1,32 @@
+﻿<Window x:Class="Spiel.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Spiel"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="900" Width="1600"
+        KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseDown="Window_MouseDown" MouseUp="Window_MouseUp">
+	<Grid>
+		<Border x:Name="border" BorderBrush="Black" BorderThickness="1" Margin="200,20,200,100" Background="Black" Padding="10">
+			<Canvas x:Name="zeichenflaeche" Background="#FF2B2B2B"/>
+		</Border>
+		<Button x:Name="button_start" Content="Start" Click="Button_start_Click" Height="40" Width="120" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,55"/>
+		<TextBlock x:Name="textBlock_score" Margin="17,52,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="154"/>
+		<TextBlock x:Name="textBlock_health" HorizontalAlignment="Left" Margin="17,149,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" FontSize="36" Width="154"/>
+		<ProgressBar x:Name="prograssBar_health" HorizontalAlignment="Left" Height="15" Margin="17,191,0,0" VerticalAlignment="Top" Width="154" Background="#FFE43C3C" Foreground="#FF3DD458"/>
+		<TextBlock x:Name="textBlock_time" HorizontalAlignment="Left" Margin="17,259,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="154"/>
+		<TextBlock x:Name="textBlock_xp" Margin="17,364,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="154"/>
+		<TextBlock x:Name="textBlock_lebenStein" HorizontalAlignment="Left" Margin="17,581,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="154"/>
+		<TextBlock x:Name="textBlock_upgrades" HorizontalAlignment="Left" Margin="17,469,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="154"/>
+		<TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="17,20,0,0" TextWrapping="Wrap" Text="Score" VerticalAlignment="Top" FontSize="24"/>
+		<TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="17,117,0,0" TextWrapping="Wrap" Text="Health" VerticalAlignment="Top" FontSize="24"/>
+		<TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="17,227,0,0" TextWrapping="Wrap" Text="Zeit" VerticalAlignment="Top" FontSize="24"/>
+		<TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" Margin="17,332,0,0" TextWrapping="Wrap" Text="XP" VerticalAlignment="Top" FontSize="24"/>
+		<TextBlock x:Name="textBlock_Copy3" HorizontalAlignment="Left" Margin="17,437,0,0" TextWrapping="Wrap" Text="Upgrades" VerticalAlignment="Top" FontSize="24"/>
+		<TextBlock x:Name="textBlock_Copy4" HorizontalAlignment="Left" Margin="17,549,0,0" TextWrapping="Wrap" Text="Gegner HP" VerticalAlignment="Top" FontSize="24"/>
+
+
+
+	</Grid>
+</Window>
