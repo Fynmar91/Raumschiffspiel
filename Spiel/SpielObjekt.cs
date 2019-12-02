@@ -68,18 +68,18 @@ namespace Spiel
 			return uebertretung;
 		}
 
-		public abstract void Zeichne(Canvas zeichenflaeche);
+		public abstract bool Zeichne(Canvas zeichenflaeche);
 	}
 
 	class Asteroid : SpielObjekt
 	{
 		static Random zufall = new Random();
 		Polygon umriss = new Polygon();
-		double leben = 10;
+		double leben;
 
-		public Asteroid(Canvas zeichenflaeche, int multiplier)
+		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 24, int extraLeben = 0)
 			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
-					(zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 8), (zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 8))
+					(zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 6))
 		{
 			if (MyX - zeichenflaeche.ActualWidth < MyX)
 			{
@@ -119,23 +119,23 @@ namespace Spiel
 				}
 			}
 
-
 			for (int i = 0; i < 20; i++)
 			{
 				double alpha = 2 * Math.PI / 20 * i;
-				double radius = 24 + 12 * zufall.NextDouble();
+				double radius = groesse + groesse / 2 * zufall.NextDouble();
 				umriss.Points.Add(new Point(radius * Math.Cos(alpha), radius * Math.Sin(alpha)));
 			}
 			umriss.Fill = Brushes.Gray;
 
-			leben = multiplier / 8 + 10;
+			leben = multiplier / 4 + 20 + extraLeben;
 		}
 
-		public override void Zeichne(Canvas zeichenflaeche)
+		public override bool Zeichne(Canvas zeichenflaeche)
 		{
 			zeichenflaeche.Children.Add(umriss);
 			Canvas.SetLeft(umriss, MyX);
 			Canvas.SetTop(umriss, MyY);
+			return false;
 		}
 
 		public bool EnthaeltPunkt(double x, double y)
@@ -177,7 +177,7 @@ namespace Spiel
 			MyHP = 100;
 		}
 
-		public override void Zeichne(Canvas zeichenflaeche)
+		public override bool Zeichne(Canvas zeichenflaeche)
 		{
 			zeichenflaeche.Children.Add(umriss);
 			Canvas.SetLeft(umriss, MyX);
@@ -188,6 +188,7 @@ namespace Spiel
 			Canvas.SetZIndex(schild, -1);
 			schild.Width = schildRadius;
 			schild.Height = schildRadius;
+			return false;
 		}
 
 		public void Rotieren(Canvas zeichenflaeche, Point mausPos)
@@ -236,8 +237,10 @@ namespace Spiel
 	{
 		Ellipse umriss = new Ellipse();
 		public double MySchaden { get; set; }
+		int leben;
+		bool bombe;
 
-		public Torpedo(Raumschiff raumschiff, int abweichung, Color fabe, double schaden)
+		public Torpedo(Raumschiff raumschiff, int abweichung, Color fabe, double schaden, int leben)
 			: base(raumschiff.MyX, raumschiff.MyY,
 					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500 )
 		{
@@ -246,9 +249,10 @@ namespace Spiel
 			umriss.Fill = new SolidColorBrush(fabe);
 			umriss.RenderTransform = raumschiff.Rotation;
 			MySchaden = schaden;
+			this.leben = leben;
 		}
 
-		public Torpedo(double x, double y, int abweichung, Color fabe, double schaden)
+		public Torpedo(double x, double y, int abweichung, Color fabe, double schaden, int leben)
 			: base(x, y, Math.Cos((-90 + abweichung) * Math.PI / 180) * 1500
 				  , Math.Sin((-90 + abweichung) * Math.PI / 180) * 1500)
 		{
@@ -256,14 +260,21 @@ namespace Spiel
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
 			umriss.RenderTransform =  new RotateTransform(abweichung);
-			MySchaden = schaden * 10;
+			bombe = true;
+			MySchaden = schaden * 20;
+			this.leben = leben;
 		}
 
-		public override void Zeichne(Canvas zeichenflaeche)
+		public override bool Zeichne(Canvas zeichenflaeche)
 		{
 			zeichenflaeche.Children.Add(umriss);
 			Canvas.SetLeft(umriss, MyX);
 			Canvas.SetTop(umriss, MyY);
+			if (bombe)
+			{
+				MySchaden -= 1;
+			}
+			return --leben < 0;
 		}
 	}
 
@@ -285,11 +296,12 @@ namespace Spiel
 			return umriss.RenderedGeometry.FillContains(new Point(x - MyX, y - MyY));
 		}
 
-		public override void Zeichne(Canvas zeichenflaeche)
+		public override bool Zeichne(Canvas zeichenflaeche)
 		{
 			zeichenflaeche.Children.Add(umriss);
 			Canvas.SetLeft(umriss, MyX);
 			Canvas.SetTop(umriss, MyY);
+			return false;
 		}
 	}
 

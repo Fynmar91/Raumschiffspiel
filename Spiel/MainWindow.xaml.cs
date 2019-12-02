@@ -44,6 +44,7 @@ namespace Spiel
 		double zeit;
 		double spawnZeit;
 		int durchlaeufe;
+		int level;
 
 		bool schiessen;
 		int schiessWarte;
@@ -55,8 +56,8 @@ namespace Spiel
 		const int maxUpgrades = 6;
 
 		int xp;
-		int schiffGeschwindikeit = 400;
-		double schiffSchaden = 1;
+		int schiffGeschwindikeit;
+		double schiffSchaden;
 
 		public int MyUpgradePreis
 		{
@@ -141,6 +142,19 @@ namespace Spiel
 								break;
 						}
 
+						if (durchlaeufe / level > 5)
+						{
+							asteroidObjekte.Add(new Asteroid(zeichenflaeche, 0, Convert.ToInt32(zeichenflaeche.ActualHeight / 4), level * 200));
+							level++;
+						}
+
+					}
+
+					if (xp >= MyUpgradePreis && upgrades < maxUpgrades)
+					{
+						xp -= MyUpgradePreis;
+						upgrades++;
+						UpdateText();
 					}
 
 					if (schiessen)
@@ -160,14 +174,14 @@ namespace Spiel
 						{
 							if (i == 0 || ((i >= 1 && i < 3) && schiessWarte % 6 == 0) || (i >= 3 && schiessWarte % 10 == 0))
 							{
-								torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden));
-								torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden));
+								torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden, 16 - i * 2));
+								torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden, 16 - i * 2));
 							}
 
 							if (i >= 3 && schiessWarte % 3 == 0)
 							{
-								torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[i], schiffSchaden));
-								torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[i], schiffSchaden));
+								torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[i], schiffSchaden, 10));
+								torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[i], schiffSchaden, 10));
 							}
 						}
 					}
@@ -227,7 +241,15 @@ namespace Spiel
 
 			foreach (var item in torpedoObjekte)
 			{
-				item.Zeichne(zeichenflaeche);
+				if (item.Zeichne(zeichenflaeche))
+				{
+					abfall.Add(item);
+				}
+			}
+
+			foreach (var item in abfall)
+			{
+				torpedoObjekte.Remove(item);
 			}
 
 			foreach (var item in powerUpObjekte)
@@ -292,11 +314,13 @@ namespace Spiel
 					}
 					else if (item is XpMittel)
 					{
-						xp += 100;
+						xp += 50;
+						raumschiff.StarteSchilde();
 					}
 					else if (item is XpHoch)
 					{
-						xp += 200;
+						xp += 50;
+						bomben = 3;
 					}
 
 					abfall_P.Add(item);
@@ -323,7 +347,7 @@ namespace Spiel
 			textBlock_score.Text = score.ToString("0.");
 			textBlock_health.Text = raumschiff.MyHP.ToString();
 			prograssBar_health.Value = raumschiff.MyHP;
-			textBlock_lebenStein.Text = (durchlaeufe / 8 + 10).ToString();
+			textBlock_lebenStein.Text = (durchlaeufe / 4 + 20).ToString();
 			textBlock_xp.Text = xp.ToString();
 			textBlock_bomben.Text = bomben.ToString();
 			textBlock_speed.Text = schiffGeschwindikeit.ToString();
@@ -346,6 +370,16 @@ namespace Spiel
 			timer.Start();
 		}
 
+		private void Bombe()
+		{
+			Point p = Mouse.GetPosition(this);
+
+			for (int i = 0; i < 360; i += 10)
+			{
+				torpedoObjekte.Add(new Torpedo(p.X - 210, p.Y - 30, i, Color.FromArgb(255, 255, 0, 0), schiffSchaden, 20));
+			}
+		}
+
 		private void Button_start_Click(object sender, RoutedEventArgs e)
 		{
 			spielLaeuft = true;
@@ -362,6 +396,7 @@ namespace Spiel
 			spawnZeit = 0;
 			schiessWarte = 0;
 			schiffSchaden = 1;
+			level = 1;
 			asteroidObjekte = new List<Asteroid>();
 			torpedoObjekte = new List<Torpedo>();
 			powerUpObjekte = new List<XpKugel>();
@@ -393,12 +428,12 @@ namespace Spiel
 					case Key.D:
 						raumschiff.MyXvel = schiffGeschwindikeit;
 						break;
-					case Key.R:
-						if (upgrades < maxUpgrades)
-						{
-							upgrades += 1;
-						}
-						break;
+					//case Key.R:
+					//	if (upgrades < maxUpgrades)
+					//	{
+					//		upgrades += 1;
+					//	}
+					//	break;
 					case Key.F:
 						if (spielPausiert == true)
 						{
@@ -461,16 +496,6 @@ namespace Spiel
 			if (e.ChangedButton == MouseButton.Left)
 			{
 				schiessen = false;
-			}
-		}
-
-		private void Bombe()
-		{
-			Point p = Mouse.GetPosition(this);
-
-			for (int i = 0; i < 360; i += 10)
-			{
-				torpedoObjekte.Add(new Torpedo(p.X - 210, p.Y - 30, i, Color.FromArgb(255, 255, 0, 0), schiffSchaden));
 			}
 		}
 
