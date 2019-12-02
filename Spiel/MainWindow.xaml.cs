@@ -37,17 +37,19 @@ namespace Spiel
 		bool spielLaeuft = false;
 		double zeit;
 		int durchlaeufe;
+		int durchlaeufe2;
 		double score;
 		bool schiessen;
 		int upgrades;
 		const int maxUpgrades = 5;
-		int xp;
 		bool alternieren;
 		bool alternieren2;
 		double spawnZeit;
 		int bomben;
 
+		public int xp;
 		public int schiffGeschwindikeit = 400;
+		public double schiffSchaden = 1;
 
 
 		void Update(object sender, EventArgs e)
@@ -65,7 +67,7 @@ namespace Spiel
 				textBlock_xp.Text = xp.ToString();
 				textBlock_bomben.Text = bomben.ToString();
 
-				if (raumschiff.MyHP > 0 && durchlaeufe < 2)
+				if (raumschiff.MyHP > 0 && durchlaeufe2 < 10)
 				{
 					raumschiff.Rotieren(zeichenflaeche, zeichenflaeche.PointToScreen(Mouse.GetPosition(this)));
 					List<SpielObjekt> abfall = new List<SpielObjekt>();
@@ -96,6 +98,7 @@ namespace Spiel
 					if (zeit / durchlaeufe >= 5d)
 					{
 						durchlaeufe += 1;
+						durchlaeufe2 += 1;
 
 						if (raumschiff.MyHP < 97d)
 						{
@@ -106,26 +109,27 @@ namespace Spiel
 							raumschiff.MyHP = 100;
 						}
 
-						if (xp >= 200)
+						foreach (var item in spielObjekte.OfType<PowerUp>())
 						{
-							switch (zufall.Next(0, 6))
-							{
-								case 1:
-									spielObjekte.Add(new WaffenUp(zeichenflaeche));
-									break;
-								case 2:
-									spielObjekte.Add(new SchildUp(zeichenflaeche));
-									break;
-								case 3:
-									spielObjekte.Add(new BombUp(zeichenflaeche));
-									break;
-								case 4:
-									break;
-								default:
-									spielObjekte.Add(new WaffenUp(zeichenflaeche));
-									break;
-							}
-							xp = 0;
+							item.
+						}
+
+						switch (zufall.Next(0, 6))
+						{
+							case 1:
+								spielObjekte.Add(new WaffenUp(zeichenflaeche));
+								break;
+							case 2:
+								spielObjekte.Add(new SchildUp(zeichenflaeche));
+								break;
+							case 3:
+								spielObjekte.Add(new BombUp(zeichenflaeche));
+								break;
+							case 4:
+								break;
+							default:
+								spielObjekte.Add(new WaffenUp(zeichenflaeche));
+								break;
 						}
 					}
 
@@ -296,20 +300,25 @@ namespace Spiel
 					spielLaeuft = false;
 					timer.Stop();
 				}
-				else if (durchlaeufe >= 2)
+				else if (durchlaeufe2 >= 10)
 				{
-					timer.Stop();
-					Upgrades upgrades = new Upgrades(this);
-					upgrades.Show();
+					Pause();
 				}
 
 			}
 		}
 
+		void Pause()
+		{
+			timer.Stop();
+			Upgrades upgrades = new Upgrades(this);
+			upgrades.Show();
+		}
+
 		public void Weiter()
 		{
 			timer.Start();
-			durchlaeufe = 0;
+			durchlaeufe2 = 0;
 			zeit = 0;
 		}
 
@@ -348,9 +357,6 @@ namespace Spiel
 							{
 								upgrades--;
 							}
-
-							raumschiff.MyX = 0.5d * zeichenflaeche.ActualWidth;
-							raumschiff.MyY = 0.5d * zeichenflaeche.ActualHeight;
 						}
 						else
 						{
@@ -442,6 +448,9 @@ namespace Spiel
 						{
 							upgrades += 1;
 						}
+						break;
+					case Key.R:
+						Pause();
 						break;
 					default:
 						break;

@@ -20,9 +20,9 @@ namespace Spiel
 	public partial class Upgrades : Window
 	{
 		MainWindow window;
-		int upgradePunkte = 5;
 
 		int speed = 0;
+		int dmg = 0;
 
 		public Upgrades(MainWindow w)
 		{
@@ -34,34 +34,43 @@ namespace Spiel
 		void Refresh()
 		{
 			textBlock_speed.Text = (window.schiffGeschwindikeit + speed * 20).ToString();
+			textBlock_dmg.Text = (window.schiffSchaden + speed * 0.1).ToString();
 		}
 
 		private void Button_OK_Click(object sender, RoutedEventArgs e)
 		{
-			if (upgradePunkte == 0)
-			{
-				window.schiffGeschwindikeit += speed * 20;
-				this.Close();
-				window.Weiter();
-			}
+			window.schiffGeschwindikeit += speed * 20;
+			window.schiffSchaden += dmg * 0.1;
+			this.Close();
+			window.Weiter();
 		}
 
 		private void Button_speedMinus_Click(object sender, RoutedEventArgs e)
 		{
-			if (speed > 0)
-			{
-				speed--;
-				upgradePunkte++;
-			}
-			Refresh();
+			
 		}
 
 		private void Button_speedPlus_Click(object sender, RoutedEventArgs e)
 		{
-			if (upgradePunkte > 0)
+			if (window.xp > 100)
 			{
 				speed++;
-				upgradePunkte--;
+				window.xp -= 100;
+			}
+			Refresh();
+		}
+
+		private void Button_dmgMinus_Click(object sender, RoutedEventArgs e)
+		{
+			
+		}
+
+		private void Button_dmgPlus_Click(object sender, RoutedEventArgs e)
+		{
+			if (window.xp > 100)
+			{
+				dmg++;
+				window.xp -= 100;
 			}
 			Refresh();
 		}
