@@ -9,9 +9,9 @@
         KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseDown="Window_MouseDown" MouseUp="Window_MouseUp">
 	<Grid>
 		<Border x:Name="border" BorderBrush="Black" BorderThickness="1" Margin="200,20,200,100" Background="Black" Padding="10">
-			<Canvas x:Name="zeichenflaeche" Background="#FF2B2B2B"/>
+			<Canvas x:Name="zeichenflaeche" Background="#FF2B2B2B" Focusable="True"/>
 		</Border>
-		<Button x:Name="button_start" Content="Start" Click="Button_start_Click" Height="40" Width="120" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,55"/>
+		<Button x:Name="button_start" Content="Start" Click="Button_start_Click" Height="40" Width="120" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,55" Focusable="False"/>
 		<Grid HorizontalAlignment="Left" Height="100" Margin="535,773,0,-4" VerticalAlignment="Bottom" Width="154">
 			<TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="5,6,0,0" TextWrapping="Wrap" Text="Score" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_score" Margin="0,43,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="98"/>
@@ -43,19 +43,30 @@
 		</Grid>
 		
 		<Grid HorizontalAlignment="Right" Height="78" Margin="0,231,65,0" VerticalAlignment="Top" Width="130">
-			<Button x:Name="button_speedPlus" Content="Speed" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Width="76" Click="Button_speedPlus_Click"/>
+			<Button x:Name="button_speedPlus" Content="Speed" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Width="76" Click="Button_speedPlus_Click" Focusable="False"/>
 			<TextBlock x:Name="textBlock_speed" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" FontSize="22"/>
 			<TextBlock x:Name="textBlock_speedPreis" HorizontalAlignment="Left" Margin="91,52,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top"/>
 		</Grid>
 		<Grid HorizontalAlignment="Right" Height="78" Margin="0,148,65,0" VerticalAlignment="Top" Width="130">
-			<Button x:Name="button_dmgPlus" Content="Damage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_dmgPlus_Click" Margin="10,48,0,0"/>
+			<Button x:Name="button_dmgPlus" Content="Damage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_dmgPlus_Click" Margin="10,48,0,0" Focusable="False"/>
 			<TextBlock x:Name="textBlock_dmg" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
 			<TextBlock x:Name="textBlock_dmgPreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top"/>
 		</Grid>
 		<Grid HorizontalAlignment="Right" Height="78" Margin="0,314,65,0" VerticalAlignment="Top" Width="130">
-			<Button x:Name="button_upgradePlus" Content="Waffen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_upgradePlus_Click" Margin="10,48,0,0"/>
+			<Button x:Name="button_upgradePlus" Content="Waffen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_upgradePlus_Click" Margin="10,48,0,0" Focusable="False"/>
 			<TextBlock x:Name="textBlock_upgrade" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
 			<TextBlock x:Name="textBlock_upgradePreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="400" VerticalAlignment="Top"/>
+			<CheckBox x:Name="checkBox_autoUpgrade" Content="Auto" HorizontalAlignment="Left" Margin="74,10,0,0" VerticalAlignment="Top" IsChecked="True" Focusable="False"/>
+		</Grid>
+		<Grid HorizontalAlignment="Right" Height="78" Margin="0,397,65,0" VerticalAlignment="Top" Width="130">
+			<Button x:Name="button_UmlenkungPlus" Content="Umlenkung" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_UmlenkungPlus_Click" Margin="10,48,0,0" Focusable="False"/>
+			<TextBlock x:Name="textBlock_Umlenkung" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
+			<TextBlock x:Name="textBlock_UmlenkungPreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="400" VerticalAlignment="Top"/>
+		</Grid>
+		<Grid HorizontalAlignment="Right" Height="78" Margin="0,480,65,0" VerticalAlignment="Top" Width="130">
+			<Button x:Name="button_RaketenPlus" Content="Raketen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_RaketenPlus_Click" Margin="10,48,0,0" Focusable="False"/>
+			<TextBlock x:Name="textBlock_Raketen" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
+			<TextBlock x:Name="textBlock_RaketenPreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="400" VerticalAlignment="Top"/>
 		</Grid>
 
 

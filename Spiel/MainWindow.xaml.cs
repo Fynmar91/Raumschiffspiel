@@ -33,6 +33,7 @@ namespace Spiel
 		List<Asteroid> asteroidObjekte = new List<Asteroid>();
 		List<Torpedo> torpedoObjekte = new List<Torpedo>();
 		List<XpKugel> powerUpObjekte = new List<XpKugel>();
+		List<Rakete> raketeObjekte = new List<Rakete>();
 
 		Raumschiff raumschiff = null;
 
@@ -50,20 +51,23 @@ namespace Spiel
 		int schiessWarte;
 		double score;
 		int bomben;
-		int upgrades;
 
 		const int UpgradePreis = 400;
 		const int maxUpgrades = 6;
+		const int maxRaketen = 6;
 
 		int xp;
+		int schiffWaffen;
 		int schiffGeschwindikeit;
 		double schiffSchaden;
+		int schiffRaketen;
+		bool umlenkung;
 
 		public int MyUpgradePreis
 		{
 			get
 			{
-				return UpgradePreis + upgrades * 200 - 100;
+				return UpgradePreis + schiffWaffen * 200 - 100;
 			}
 		}
 
@@ -83,6 +87,14 @@ namespace Spiel
 			}
 		}
 
+		public int MyRaketenPreis
+		{
+			get
+			{
+				return Convert.ToInt32(schiffRaketen * 400 + 400);
+			}
+		}
+
 
 		void Update(object sender, EventArgs e)
 		{
@@ -97,7 +109,10 @@ namespace Spiel
 					{
 						spawnZeit = 0;
 
-						asteroidObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
+						if (asteroidObjekte.Count() < 20)
+						{
+							asteroidObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
+						}
 					}
 
 					if (zeit / durchlaeufe >= 10d)
@@ -150,10 +165,10 @@ namespace Spiel
 
 					}
 
-					if (xp >= MyUpgradePreis && upgrades < maxUpgrades)
+					if (xp >= MyUpgradePreis && schiffWaffen < maxUpgrades && checkBox_autoUpgrade.IsChecked == true)
 					{
 						xp -= MyUpgradePreis;
-						upgrades++;
+						schiffWaffen++;
 						UpdateText();
 					}
 
@@ -170,12 +185,12 @@ namespace Spiel
 
 						schiessWarte++;
 
-						for (int i = 0; i < upgrades + 1; i++)
+						for (int i = 0; i < schiffWaffen + 1; i++)
 						{
 							if (i == 0 || ((i >= 1 && i < 3) && schiessWarte % 6 == 0) || (i >= 3 && schiessWarte % 10 == 0))
 							{
-								torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden, 16 - i * 2));
-								torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden, 16 - i * 2));
+								torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden, 24 - i * 3));
+								torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden, 24 - i * 3));
 							}
 
 							if (i >= 3 && schiessWarte % 3 == 0)
@@ -183,6 +198,11 @@ namespace Spiel
 								torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[i], schiffSchaden, 10));
 								torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[i], schiffSchaden, 10));
 							}
+
+							if (schiffRaketen > 0 && schiessWarte % (10 - schiffRaketen) == 0)
+							{
+								raketeObjekte.Add(new Rakete(raumschiff, farbe[i], schiffSchaden));
+							}							
 						}
 					}
 
@@ -195,6 +215,7 @@ namespace Spiel
 					asteroidObjekte.Clear();
 					torpedoObjekte.Clear();
 					powerUpObjekte.Clear();
+					raketeObjekte.Clear();
 					raumschiff = null;
 					border.Background = Brushes.Red;
 					button_start.IsEnabled = true;
@@ -209,7 +230,8 @@ namespace Spiel
 			raumschiff.Animiere(zeichenflaeche, timer.Interval);
 			raumschiff.Rotieren(zeichenflaeche, zeichenflaeche.PointToScreen(Mouse.GetPosition(this)));
 
-			List<Torpedo> abfall = new List<Torpedo>();
+			List<Torpedo> abfall_T = new List<Torpedo>();
+			List<Rakete> abfall_R = new List<Rakete>();
 
 			foreach (var item in asteroidObjekte)
 			{
@@ -218,15 +240,30 @@ namespace Spiel
 
 			foreach (var item in torpedoObjekte)
 			{
-				if (item.Animiere(zeichenflaeche, timer.Interval))
+				if (item.Animiere(zeichenflaeche, timer.Interval) && umlenkung == false)
 				{
-					abfall.Add(item);
+					abfall_T.Add(item);
 				}
 			}
 
-			foreach (var item in abfall)
+			foreach (var item in raketeObjekte)
+			{
+				item.Ziel(FindeZiel(item.MyX, item.MyY));
+
+				if (item.Animiere(zeichenflaeche, timer.Interval))
+				{
+					abfall_R.Add(item);
+				}
+			}
+
+			foreach (var item in abfall_T)
 			{
 				torpedoObjekte.Remove(item);
+			}
+
+			foreach (var item in abfall_R)
+			{
+				raketeObjekte.Remove(item);
 			}
 
 			PruefeKollisionen();
@@ -234,27 +271,32 @@ namespace Spiel
 			zeichenflaeche.Children.Clear();
 			raumschiff.Zeichne(zeichenflaeche);
 
+			foreach (var item in torpedoObjekte)
+			{
+				if (item.Zeichne(zeichenflaeche))
+				{
+					abfall_T.Add(item);
+				}
+			}
+
 			foreach (var item in asteroidObjekte)
 			{
 				item.Zeichne(zeichenflaeche);
 			}
 
-			foreach (var item in torpedoObjekte)
-			{
-				if (item.Zeichne(zeichenflaeche))
-				{
-					abfall.Add(item);
-				}
-			}
-
-			foreach (var item in abfall)
-			{
-				torpedoObjekte.Remove(item);
-			}
-
 			foreach (var item in powerUpObjekte)
 			{
 				item.Zeichne(zeichenflaeche);
+			}
+
+			foreach (var item in raketeObjekte)
+			{
+				item.Zeichne(zeichenflaeche);
+			}
+
+			foreach (var item in abfall_T)
+			{
+				torpedoObjekte.Remove(item);
 			}
 		}
 
@@ -263,6 +305,7 @@ namespace Spiel
 			List<Asteroid> abfall_A = new List<Asteroid>();
 			List<Torpedo> abfall_T = new List<Torpedo>();
 			List<XpKugel> abfall_P = new List<XpKugel>();
+			List<Rakete> abfall_R = new List<Rakete>();
 
 			foreach (var asteroid in asteroidObjekte)
 			{
@@ -278,7 +321,21 @@ namespace Spiel
 						}
 
 						abfall_T.Add(torpedo);
+					}
+				}
 
+				foreach (var rakete in raketeObjekte)
+				{
+					if (asteroid.EnthaeltPunkt(rakete.MyX, rakete.MyY))
+					{
+						if (asteroid.Treffer(rakete.MySchaden))
+						{
+							abfall_A.Add(asteroid);
+							score += 20;
+							xp += 20;
+						}
+
+						abfall_R.Add(rakete);
 					}
 				}
 
@@ -288,13 +345,13 @@ namespace Spiel
 					{
 						abfall_A.Add(asteroid);
 
-						if (upgrades > 1)
+						if (schiffWaffen > 1)
 						{
-							upgrades -= 2;
+							schiffWaffen -= 2;
 						}
-						else if (upgrades > 0)
+						else if (schiffWaffen > 0)
 						{
-							upgrades--;
+							schiffWaffen--;
 						}
 					}
 					else
@@ -339,6 +396,10 @@ namespace Spiel
 			{
 				powerUpObjekte.Remove(item);
 			}
+			foreach (var item in abfall_R)
+			{
+				raketeObjekte.Remove(item);
+			}
 		}
 
 		void UpdateText()
@@ -352,10 +413,14 @@ namespace Spiel
 			textBlock_bomben.Text = bomben.ToString();
 			textBlock_speed.Text = schiffGeschwindikeit.ToString();
 			textBlock_dmg.Text = schiffSchaden.ToString();
-			textBlock_upgrade.Text = upgrades.ToString();
+			textBlock_upgrade.Text = schiffWaffen.ToString();
 			textBlock_upgradePreis.Text = MyUpgradePreis.ToString();
 			textBlock_dmgPreis.Text = MyDmgPreis.ToString();
 			textBlock_speedPreis.Text = MySpeedPreis.ToString();
+			textBlock_UmlenkungPreis.Text = "1000";
+			textBlock_Umlenkung.Text = Convert.ToInt32(umlenkung).ToString();
+			textBlock_Raketen.Text = schiffRaketen.ToString();
+			textBlock_RaketenPreis.Text = MyRaketenPreis.ToString();
 		}
 
 		void Pause()
@@ -380,6 +445,38 @@ namespace Spiel
 			}
 		}
 
+		private Vector FindeZiel(double x, double y)
+		{
+			double naechstes;
+			Point punktNaechstes = new Point(x, y);
+			Point punkt = new Point(x, y);
+
+			if (asteroidObjekte.Count > 0)
+			{
+				Point punkt2 = new Point(asteroidObjekte[0].MyX, asteroidObjekte[0].MyY);
+				naechstes = Point.Subtract(punkt2, punkt).Length;
+
+				foreach (var item in asteroidObjekte)
+				{
+					punkt2 = new Point(item.MyX, item.MyY);
+					double abstand = Point.Subtract(punkt2, punkt).Length;
+
+					if (abstand < naechstes)
+					{
+						punktNaechstes = punkt2;
+						naechstes = abstand;
+					}
+				}
+			}
+			else
+			{
+
+			}
+
+			Vector vector = Point.Subtract(punkt, punktNaechstes);
+			return vector;
+		}
+
 		private void Button_start_Click(object sender, RoutedEventArgs e)
 		{
 			spielLaeuft = true;
@@ -388,7 +485,7 @@ namespace Spiel
 			score = 0;
 			durchlaeufe = 1;
 			schiessen = false;
-			upgrades = 0;
+			schiffWaffen = 0;
 			xp = 0;
 			bomben = 3;
 			prograssBar_health.Value = 100;
@@ -397,9 +494,8 @@ namespace Spiel
 			schiessWarte = 0;
 			schiffSchaden = 1;
 			level = 1;
-			asteroidObjekte = new List<Asteroid>();
-			torpedoObjekte = new List<Torpedo>();
-			powerUpObjekte = new List<XpKugel>();
+			schiffRaketen = 0;
+			umlenkung = false;
 			border.Background = Brushes.Black;
 			raumschiff = new Raumschiff(zeichenflaeche);
 			timer.Start();
@@ -428,13 +524,13 @@ namespace Spiel
 					case Key.D:
 						raumschiff.MyXvel = schiffGeschwindikeit;
 						break;
-					//case Key.R:
-					//	if (upgrades < maxUpgrades)
-					//	{
-					//		upgrades += 1;
-					//	}
-					//	break;
-					case Key.F:
+					case Key.R:
+						if (schiffWaffen < maxUpgrades)
+						{
+							schiffWaffen += 1;
+						}
+						break;
+					case Key.Space:
 						if (spielPausiert == true)
 						{
 							Weiter();
@@ -448,7 +544,7 @@ namespace Spiel
 						break;
 				}
 			}
-			else if (e.Key == Key.Space)
+			else if (e.Key == Key.Enter)
 			{
 				button_start.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
 			}
@@ -483,6 +579,7 @@ namespace Spiel
 			if (e.ChangedButton == MouseButton.Left)
 			{
 				schiessen = true;
+				Keyboard.Focus(zeichenflaeche);
 			}
 			else if (e.ChangedButton == MouseButton.Right && bomben > 0)
 			{
@@ -523,10 +620,32 @@ namespace Spiel
 
 		private void Button_upgradePlus_Click(object sender, RoutedEventArgs e)
 		{
-			if (xp >= MyUpgradePreis && upgrades < maxUpgrades)
+			if (xp >= MyUpgradePreis && schiffWaffen < maxUpgrades)
 			{
 				xp -= MyUpgradePreis;
-				upgrades++;
+				schiffWaffen++;
+			}
+
+			UpdateText();
+		}
+
+		private void Button_UmlenkungPlus_Click(object sender, RoutedEventArgs e)
+		{
+			if (xp >= 1000 && umlenkung == false)
+			{
+				xp -= 1000;
+				umlenkung = true;
+			}
+
+			UpdateText();
+		}
+
+		private void Button_RaketenPlus_Click(object sender, RoutedEventArgs e)
+		{
+			if (xp >= MyRaketenPreis && schiffRaketen < maxRaketen)
+			{
+				xp -= MyRaketenPreis;
+				schiffRaketen++;
 			}
 
 			UpdateText();

@@ -12,60 +12,54 @@ namespace Spiel
 {
 	abstract class SpielObjekt
 	{
-		double x;
-		double y;
-		double xVel;
-		double yVel;
-		public double MyX { get => x; set => x = value; }
-		public double MyY { get => y; set => y = value; }
-		public double MyXvel { get => xVel; set => xVel = value; }
-		public double MyYvel { get => yVel; set => yVel = value; }
+		public double MyX { get; set; }
+		public double MyY { get; set; }
+		public double MyXvel { get; set; }
+		public double MyYvel { get; set; }
 
 
 		protected SpielObjekt(double x, double y)
 		{
-			this.x = x;
-			this.y = y;
+			this.MyX = x;
+			this.MyY = y;
 		}
 
 		protected SpielObjekt(double x, double y, double vx, double vy)
 		{
-			this.x = x;
-			this.y = y;
-			this.xVel = vx;
-			this.yVel = vy;
+			this.MyX = x;
+			this.MyY = y;
+			this.MyXvel = vx;
+			this.MyYvel = vy;
 		}
 
 		public bool Animiere(Canvas zeichenflaeche, TimeSpan intervall)
 		{
-			x += MyXvel * intervall.TotalSeconds;
-			y += MyYvel * intervall.TotalSeconds;
+			MyX += MyXvel * intervall.TotalSeconds;
+			MyY += MyYvel * intervall.TotalSeconds;
 
-			bool uebertretung = false;
-
-			if (x < 0)
+			if (MyX < 0)
 			{
-				x = zeichenflaeche.ActualWidth;
-				uebertretung = true;
+				MyXvel = -MyXvel;
+				return true;
 			}
-			else if (x > zeichenflaeche.ActualWidth)
+			else if (MyX > zeichenflaeche.ActualWidth)
 			{
-				x = 0;
-				uebertretung = true;
+				MyXvel = -MyXvel;
+				return true;
 			}
 
-			if (y < 0)
+			if (MyY < 0)
 			{
-				y = zeichenflaeche.ActualHeight;
-				uebertretung = true;
+				MyYvel = -MyYvel;
+				return true;
 			}
-			else if (y > zeichenflaeche.ActualHeight)
+			else if (MyY > zeichenflaeche.ActualHeight)
 			{
-				y = 0;
-				uebertretung = true;
+				MyYvel = -MyYvel;
+				return true;
 			}
 
-			return uebertretung;
+			return false;
 		}
 
 		public abstract bool Zeichne(Canvas zeichenflaeche);
@@ -238,43 +232,68 @@ namespace Spiel
 		Ellipse umriss = new Ellipse();
 		public double MySchaden { get; set; }
 		int leben;
-		bool bombe;
 
 		public Torpedo(Raumschiff raumschiff, int abweichung, Color fabe, double schaden, int leben)
 			: base(raumschiff.MyX, raumschiff.MyY,
-					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500 )
+					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500)
 		{
 			umriss.Width = 3;
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
-			umriss.RenderTransform = raumschiff.Rotation;
 			MySchaden = schaden;
 			this.leben = leben;
 		}
 
 		public Torpedo(double x, double y, int abweichung, Color fabe, double schaden, int leben)
 			: base(x, y, Math.Cos((-90 + abweichung) * Math.PI / 180) * 1500
-				  , Math.Sin((-90 + abweichung) * Math.PI / 180) * 1500)
+				, Math.Sin((-90 + abweichung) * Math.PI / 180) * 1500)
 		{
 			umriss.Width = 3;
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
-			umriss.RenderTransform =  new RotateTransform(abweichung);
-			bombe = true;
-			MySchaden = schaden * 20;
+			MySchaden = schaden * 40;
 			this.leben = leben;
 		}
 
 		public override bool Zeichne(Canvas zeichenflaeche)
 		{
+			umriss.RenderTransform = new RotateTransform(-90 + Math.Atan2(MyYvel, MyXvel) / Math.PI * 180);
 			zeichenflaeche.Children.Add(umriss);
 			Canvas.SetLeft(umriss, MyX);
 			Canvas.SetTop(umriss, MyY);
-			if (bombe)
-			{
-				MySchaden -= 1;
-			}
 			return --leben < 0;
+		}
+	}
+
+	class Rakete : SpielObjekt
+	{
+		Ellipse umriss = new Ellipse();
+		public double MySchaden { get; set; }
+
+		public Rakete(Raumschiff raumschiff, Color fabe, double schaden)
+			: base(raumschiff.MyX, raumschiff.MyY,
+				  Math.Cos((-90 + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500)
+		{
+			umriss.Width = 5;
+			umriss.Height = 20;
+			umriss.Fill = new SolidColorBrush(fabe);
+			MySchaden = schaden * 5;
+		}
+
+		public void Ziel(Vector vector)
+		{
+			RotateTransform rotateTransform = new RotateTransform(-90 + Math.Atan2(vector.Y, vector.X) / Math.PI * 180);
+			MyXvel = Math.Cos((-90 + rotateTransform.Angle) * Math.PI / 180) * 1500;
+			MyYvel = Math.Sin((-90 + rotateTransform.Angle) * Math.PI / 180) * 1500;
+		}
+
+		public override bool Zeichne(Canvas zeichenflaeche)
+		{
+			umriss.RenderTransform = new RotateTransform(-90 + Math.Atan2(MyYvel, MyXvel) / Math.PI * 180);
+			zeichenflaeche.Children.Add(umriss);
+			Canvas.SetLeft(umriss, MyX);
+			Canvas.SetTop(umriss, MyY);
+			return false;
 		}
 	}
 
