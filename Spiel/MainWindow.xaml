@@ -25,6 +25,8 @@
 		<TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" Margin="17,332,0,0" TextWrapping="Wrap" Text="XP" VerticalAlignment="Top" FontSize="24"/>
 		<TextBlock x:Name="textBlock_Copy3" HorizontalAlignment="Left" Margin="17,437,0,0" TextWrapping="Wrap" Text="Upgrades" VerticalAlignment="Top" FontSize="24"/>
 		<TextBlock x:Name="textBlock_Copy4" HorizontalAlignment="Left" Margin="17,549,0,0" TextWrapping="Wrap" Text="Gegner HP" VerticalAlignment="Top" FontSize="24"/>
+		<TextBlock x:Name="textBlock_bomben" HorizontalAlignment="Left" Margin="17,672,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="154"/>
+		<TextBlock x:Name="textBlock_Copy5" HorizontalAlignment="Left" Margin="17,640,0,0" TextWrapping="Wrap" Text="Bomben" VerticalAlignment="Top" FontSize="24"/>
 
 
 

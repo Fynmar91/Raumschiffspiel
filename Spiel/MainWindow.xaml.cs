@@ -30,21 +30,24 @@ namespace Spiel
 			timer.Tick += Update;
 		}
 
+		List<SpielObjekt> spielObjekte = new List<SpielObjekt>();
 		DispatcherTimer timer = new DispatcherTimer();
 		Raumschiff raumschiff = null;
-		List<SpielObjekt> spielObjekte = new List<SpielObjekt>();
+		static Random zufall = new Random();
 		bool spielLaeuft = false;
 		double zeit;
 		int durchlaeufe;
-		int leben;
 		double score;
 		bool schiessen;
 		int upgrades;
-		const int maxUpgrades = 5; 
+		const int maxUpgrades = 5;
 		int xp;
 		bool alternieren;
 		bool alternieren2;
 		double spawnZeit;
+		int bomben;
+
+		public int schiffGeschwindikeit = 400;
 
 
 		void Update(object sender, EventArgs e)
@@ -55,13 +58,14 @@ namespace Spiel
 				spawnZeit += 0.2 * 0.2;
 				textBlock_time.Text = zeit.ToString("0.##");
 				textBlock_score.Text = score.ToString("0.");
-				textBlock_health.Text = leben.ToString();
-				prograssBar_health.Value = leben;
+				textBlock_health.Text = raumschiff.MyHP.ToString();
+				prograssBar_health.Value = raumschiff.MyHP;
 				textBlock_lebenStein.Text = (durchlaeufe / 8 + 10).ToString();
 				textBlock_upgrades.Text = upgrades.ToString();
 				textBlock_xp.Text = xp.ToString();
+				textBlock_bomben.Text = bomben.ToString();
 
-				if (leben > 0)
+				if (raumschiff.MyHP > 0 && durchlaeufe < 2)
 				{
 					raumschiff.Rotieren(zeichenflaeche, zeichenflaeche.PointToScreen(Mouse.GetPosition(this)));
 					List<SpielObjekt> abfall = new List<SpielObjekt>();
@@ -93,18 +97,34 @@ namespace Spiel
 					{
 						durchlaeufe += 1;
 
-						if (leben < 97d)
+						if (raumschiff.MyHP < 97d)
 						{
-							leben += 3;
+							raumschiff.MyHP += 3;
 						}
 						else
 						{
-							leben = 100;
+							raumschiff.MyHP = 100;
 						}
 
-						if (xp >= 400 && upgrades < maxUpgrades)
+						if (xp >= 200)
 						{
-							upgrades++;
+							switch (zufall.Next(0, 6))
+							{
+								case 1:
+									spielObjekte.Add(new WaffenUp(zeichenflaeche));
+									break;
+								case 2:
+									spielObjekte.Add(new SchildUp(zeichenflaeche));
+									break;
+								case 3:
+									spielObjekte.Add(new BombUp(zeichenflaeche));
+									break;
+								case 4:
+									break;
+								default:
+									spielObjekte.Add(new WaffenUp(zeichenflaeche));
+									break;
+							}
 							xp = 0;
 						}
 					}
@@ -266,7 +286,7 @@ namespace Spiel
 						}
 					}
 				}
-				else
+				else if (raumschiff.MyHP <= 0)
 				{
 					zeichenflaeche.Children.Clear();
 					raumschiff = null;
@@ -276,8 +296,21 @@ namespace Spiel
 					spielLaeuft = false;
 					timer.Stop();
 				}
-				
+				else if (durchlaeufe >= 2)
+				{
+					timer.Stop();
+					Upgrades upgrades = new Upgrades(this);
+					upgrades.Show();
+				}
+
 			}
+		}
+
+		public void Weiter()
+		{
+			timer.Start();
+			durchlaeufe = 0;
+			zeit = 0;
 		}
 
 		void PruefeKollisionen(List<SpielObjekt> abfall)
@@ -288,14 +321,14 @@ namespace Spiel
 				{
 					if (asteroid.EnthaeltPunkt(photonenTorpedo.MyX, photonenTorpedo.MyY))
 					{
-						if (asteroid.Damage())
+						if (asteroid.Treffer(photonenTorpedo.MySchaden))
 						{
 							abfall.Add(asteroid);
 							score += 20;
 							xp += 20;
 						}
 						abfall.Add(photonenTorpedo);
-						
+
 
 					}
 				}
@@ -303,55 +336,59 @@ namespace Spiel
 				{
 					if (asteroid.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
 					{
-						leben -= 33;
-						abfall.Add(asteroid);
-						if (upgrades > 1)
+						if (raumschiff.Damage())
 						{
-							upgrades -= 2;
+							abfall.Add(asteroid);
+
+							if (upgrades > 1)
+							{
+								upgrades -= 2;
+							}
+							else if (upgrades > 0)
+							{
+								upgrades--;
+							}
+
+							raumschiff.MyX = 0.5d * zeichenflaeche.ActualWidth;
+							raumschiff.MyY = 0.5d * zeichenflaeche.ActualHeight;
 						}
-						else if (upgrades > 0)
+						else
 						{
-							upgrades--;
+							abfall.Add(asteroid);
 						}
-						raumschiff.MyX = 0.5d * zeichenflaeche.ActualWidth;
-						raumschiff.MyY = 0.5d * zeichenflaeche.ActualHeight;
 					}
 				}
 			}
+
+			foreach (PowerUp powerUp in spielObjekte.OfType<PowerUp>())
+			{
+				if (powerUp.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
+				{
+					if (powerUp is WaffenUp)
+					{
+						if (upgrades < maxUpgrades)
+						{
+							upgrades++;
+						}
+						else if (upgrades >= maxUpgrades)
+						{
+
+						}
+					}
+					else if (powerUp is SchildUp)
+					{
+						raumschiff.StarteSchilde();
+					}
+					else if (powerUp is BombUp)
+					{
+						bomben = 3;
+					}
+
+					abfall.Add(powerUp);
+				}
+			}
+
 			foreach (SpielObjekt spielObjekt in abfall)
-			{
-				spielObjekte.Remove(spielObjekt);
-			}
-		}
-
-		void Auserhalb()
-		{
-			List<SpielObjekt> auserhalb = new List<SpielObjekt>();
-
-			foreach (PhotonenTorpedo photonenTorpedo in spielObjekte.OfType<PhotonenTorpedo>())
-			{
-				if (photonenTorpedo.MyX < 0d)
-				{
-					auserhalb.Add(photonenTorpedo);
-				}
-				else if (photonenTorpedo.MyX > zeichenflaeche.ActualWidth)
-				{
-					auserhalb.Add(photonenTorpedo);
-				}
-
-				if (!auserhalb.Contains(photonenTorpedo))
-				{
-					if (photonenTorpedo.MyY < 0d)
-					{
-						auserhalb.Add(photonenTorpedo);
-					}
-					else if (photonenTorpedo.MyY > zeichenflaeche.ActualHeight)
-					{
-						auserhalb.Add(photonenTorpedo);
-					}
-				}
-			}
-			foreach (SpielObjekt spielObjekt in auserhalb)
 			{
 				spielObjekte.Remove(spielObjekt);
 			}
@@ -362,12 +399,12 @@ namespace Spiel
 			spielLaeuft = true;
 			button_start.IsEnabled = false;
 			zeit = 0;
-			leben = 100;
 			score = 0;
 			durchlaeufe = 1;
 			schiessen = false;
 			upgrades = 0;
 			xp = 0;
+			bomben = 3;
 			prograssBar_health.Value = 100;
 			textBlock_health.Text = "100";
 			textBlock_score.Text = "000";
@@ -389,16 +426,16 @@ namespace Spiel
 				switch (e.Key)
 				{
 					case Key.W:
-						raumschiff.MyYvel = -400d;
+						raumschiff.MyYvel = -schiffGeschwindikeit;
 						break;
 					case Key.S:
-						raumschiff.MyYvel = 400d;
+						raumschiff.MyYvel = schiffGeschwindikeit;
 						break;
 					case Key.A:
-						raumschiff.MyXvel = -400d;
+						raumschiff.MyXvel = -schiffGeschwindikeit;
 						break;
 					case Key.D:
-						raumschiff.MyXvel = 400d;
+						raumschiff.MyXvel = schiffGeschwindikeit;
 						break;
 					case Key.F:
 						if (upgrades < maxUpgrades)
@@ -442,12 +479,30 @@ namespace Spiel
 
 		private void Window_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			schiessen = true;
+			if (e.ChangedButton == MouseButton.Left)
+			{
+				schiessen = true;
+			}
+			else if (e.ChangedButton == MouseButton.Right && bomben > 0)
+			{
+				Bombe();
+				bomben--;
+			}
 		}
 
 		private void Window_MouseUp(object sender, MouseButtonEventArgs e)
 		{
 			schiessen = false;
+		}
+
+		private void Bombe()
+		{
+			Point p = Mouse.GetPosition(this);
+
+			for (int i = 0; i < 360; i += 10)
+			{
+				spielObjekte.Add(new PhotonenTorpedo(p.X - 210, p.Y - 30, i, Color.FromArgb(255, 255, 0, 0)));
+			}
 		}
 	}
 }

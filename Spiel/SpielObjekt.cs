@@ -43,25 +43,25 @@ namespace Spiel
 
 			bool uebertretung = false;
 
-			if (x < 0d)
+			if (x < 0)
 			{
 				x = zeichenflaeche.ActualWidth;
 				uebertretung = true;
 			}
 			else if (x > zeichenflaeche.ActualWidth)
 			{
-				x = 0d;
+				x = 0;
 				uebertretung = true;
 			}
 
-			if (y < 0d)
+			if (y < 0)
 			{
 				y = zeichenflaeche.ActualHeight;
 				uebertretung = true;
 			}
 			else if (y > zeichenflaeche.ActualHeight)
 			{
-				y = 0d;
+				y = 0;
 				uebertretung = true;
 			}
 
@@ -79,7 +79,7 @@ namespace Spiel
 
 		public Asteroid(Canvas zeichenflaeche, int multiplier)
 			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
-					(zufall.NextDouble() - 0.5) * 400d * (1 + multiplier / 8), (zufall.NextDouble() - 0.5) * 400d * (1 + multiplier / 8))
+					(zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 8), (zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 8))
 		{
 			if (MyX - zeichenflaeche.ActualWidth < MyX)
 			{
@@ -95,7 +95,7 @@ namespace Spiel
 					}
 					else
 					{
-						MyY = 0d;
+						MyY = 0;
 					}
 				}
 
@@ -104,7 +104,7 @@ namespace Spiel
 			{
 				if (MyX / 1.6 < MyY - zeichenflaeche.ActualHeight && MyX / 1.6 < MyY)
 				{
-					MyX = 0d;
+					MyX = 0;
 				}
 				else
 				{
@@ -114,7 +114,7 @@ namespace Spiel
 					}
 					else
 					{
-						MyY = 0d;
+						MyY = 0;
 					}
 				}
 			}
@@ -122,8 +122,8 @@ namespace Spiel
 
 			for (int i = 0; i < 20; i++)
 			{
-				double alpha = 2d * Math.PI / 20d * i;
-				double radius = 24d + 12d * zufall.NextDouble();
+				double alpha = 2 * Math.PI / 20 * i;
+				double radius = 24 + 12 * zufall.NextDouble();
 				umriss.Points.Add(new Point(radius * Math.Cos(alpha), radius * Math.Sin(alpha)));
 			}
 			umriss.Fill = Brushes.Gray;
@@ -143,18 +143,24 @@ namespace Spiel
 			return umriss.RenderedGeometry.FillContains(new Point(x - MyX, y - MyY));
 		}
 
-		public bool Damage()
+		public bool Treffer(int schaden)
 		{
-			leben -= 1;
+			leben -= schaden;
 			return leben <= 0;
 		}
 	}
 
 	class Raumschiff : SpielObjekt
 	{
+		Point mausPos;
 		Polygon umriss = new Polygon();
+		Ellipse schild = new Ellipse();
+		int schildRadius = 100;
+
 		RotateTransform rotation = null;
 		public RotateTransform Rotation { get => rotation; }
+		public int MyHP { get; set; }
+		public int MySchild { get; set; }
 
 		public Raumschiff(Canvas zeichenflaeche)
 			: base(0.5d * zeichenflaeche.ActualWidth, 0.5d * zeichenflaeche.ActualHeight)
@@ -163,6 +169,12 @@ namespace Spiel
 			umriss.Points.Add(new Point(10d, 10d));
 			umriss.Points.Add(new Point(-10d, 10d));
 			umriss.Fill = Brushes.White;
+
+			schild.Width = schildRadius;
+			schild.Height = schildRadius;
+			schild.Fill = new SolidColorBrush(Color.FromArgb(128, 0, 255, 255));
+			schild.Fill.Opacity = 0;
+			MyHP = 100;
 		}
 
 		public override void Zeichne(Canvas zeichenflaeche)
@@ -170,30 +182,81 @@ namespace Spiel
 			zeichenflaeche.Children.Add(umriss);
 			Canvas.SetLeft(umriss, MyX);
 			Canvas.SetTop(umriss, MyY);
+			zeichenflaeche.Children.Add(schild);
+			Canvas.SetLeft(schild, MyX - schild.ActualWidth / 2);
+			Canvas.SetTop(schild, MyY - schild.ActualHeight / 2);
+			Canvas.SetZIndex(schild, -1);
+			schild.Width = schildRadius;
+			schild.Height = schildRadius;
 		}
 
 		public void Rotieren(Canvas zeichenflaeche, Point mausPos)
 		{
+			this.mausPos = mausPos;
 			Point schiffPos = zeichenflaeche.PointToScreen(new Point(this.MyX, this.MyY));
-			double xDiff = mausPos.X - 210d - schiffPos.X;
-			double yDiff = mausPos.Y - 30d - schiffPos.Y;
+			double xDiff = mausPos.X - 210 - schiffPos.X;
+			double yDiff = mausPos.Y - 30 - schiffPos.Y;
 			rotation = new RotateTransform(90 + (Math.Atan2(yDiff, xDiff) * 180 / Math.PI));
 			umriss.RenderTransform = rotation;
+		}
+
+		public bool Damage()
+		{
+			switch (MySchild)
+			{
+				case 3:
+					MySchild--;
+					schildRadius = 80;
+					return false;
+				case 2:
+					MySchild--;
+					schildRadius = 60;
+					return false;
+				case 1:
+					MySchild = 0;
+					schild.Fill.Opacity = 0;
+					return false;
+				case 0:
+					MyHP -= 33;
+					return true;
+				default:
+					return true;
+			}
+		}
+
+		public void StarteSchilde()
+		{
+			MySchild = 3;
+			schild.Fill.Opacity = 100;
+			schildRadius = 100;
 		}
 	}
 
 	class PhotonenTorpedo : SpielObjekt
 	{
 		Ellipse umriss = new Ellipse();
+		public int MySchaden { get; set; }
 
 		public PhotonenTorpedo(Raumschiff raumschiff, int abweichung, Color fabe, double geschwindigkeit = 1)
 			: base(raumschiff.MyX, raumschiff.MyY,
-					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500d * geschwindigkeit, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500d* geschwindigkeit)
+					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500 * geschwindigkeit, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500 * geschwindigkeit)
 		{
-			umriss.Width = 3d;
-			umriss.Height = 10d;
+			umriss.Width = 3;
+			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
 			umriss.RenderTransform = raumschiff.Rotation;
+			MySchaden = 1;
+		}
+
+		public PhotonenTorpedo(double x, double y, int abweichung, Color fabe, double geschwindigkeit = 1)
+			: base(x, y, Math.Cos((-90 + abweichung) * Math.PI / 180) * 1500 * geschwindigkeit
+				  , Math.Sin((-90 + abweichung) * Math.PI / 180) * 1500 * geschwindigkeit)
+		{
+			umriss.Width = 3;
+			umriss.Height = 10;
+			umriss.Fill = new SolidColorBrush(fabe);
+			umriss.RenderTransform =  new RotateTransform(abweichung);
+			MySchaden = 10;
 		}
 
 		public override void Zeichne(Canvas zeichenflaeche)
@@ -201,6 +264,53 @@ namespace Spiel
 			zeichenflaeche.Children.Add(umriss);
 			Canvas.SetLeft(umriss, MyX);
 			Canvas.SetTop(umriss, MyY);
+		}
+	}
+
+	abstract class PowerUp : SpielObjekt
+	{
+		static Random zufall = new Random();
+		Ellipse umriss = new Ellipse();
+
+		public PowerUp(Canvas zeichenflaeche, SolidColorBrush brush)
+			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight)
+		{
+			umriss.Width = 40;
+			umriss.Height = 40;
+			umriss.Fill = brush;
+		}
+
+		public bool EnthaeltPunkt(double x, double y)
+		{
+			return umriss.RenderedGeometry.FillContains(new Point(x - MyX, y - MyY));
+		}
+
+		public override void Zeichne(Canvas zeichenflaeche)
+		{
+			zeichenflaeche.Children.Add(umriss);
+			Canvas.SetLeft(umriss, MyX);
+			Canvas.SetTop(umriss, MyY);
+		}
+	}
+
+	class WaffenUp : PowerUp
+	{
+		public WaffenUp(Canvas zeichenflaeche) : base(zeichenflaeche, Brushes.BlueViolet)
+		{
+		}
+	}
+
+	class SchildUp : PowerUp
+	{
+		public SchildUp(Canvas zeichenflaeche) : base(zeichenflaeche, Brushes.Plum)
+		{
+		}
+	}
+
+	class BombUp : PowerUp
+	{
+		public BombUp(Canvas zeichenflaeche) : base(zeichenflaeche, Brushes.Red)
+		{
 		}
 	}
 }
