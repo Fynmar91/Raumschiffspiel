@@ -75,7 +75,7 @@ namespace Spiel
 	{
 		static Random zufall = new Random();
 		Polygon umriss = new Polygon();
-		int leben = 10;
+		double leben = 10;
 
 		public Asteroid(Canvas zeichenflaeche, int multiplier)
 			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
@@ -143,7 +143,7 @@ namespace Spiel
 			return umriss.RenderedGeometry.FillContains(new Point(x - MyX, y - MyY));
 		}
 
-		public bool Treffer(int schaden)
+		public bool Treffer(double schaden)
 		{
 			leben -= schaden;
 			return leben <= 0;
@@ -232,31 +232,31 @@ namespace Spiel
 		}
 	}
 
-	class PhotonenTorpedo : SpielObjekt
+	class Torpedo : SpielObjekt
 	{
 		Ellipse umriss = new Ellipse();
-		public int MySchaden { get; set; }
+		public double MySchaden { get; set; }
 
-		public PhotonenTorpedo(Raumschiff raumschiff, int abweichung, Color fabe, double geschwindigkeit = 1)
+		public Torpedo(Raumschiff raumschiff, int abweichung, Color fabe, double schaden)
 			: base(raumschiff.MyX, raumschiff.MyY,
-					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500 * geschwindigkeit, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500 * geschwindigkeit)
+					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500 )
 		{
 			umriss.Width = 3;
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
 			umriss.RenderTransform = raumschiff.Rotation;
-			MySchaden = 1;
+			MySchaden = schaden;
 		}
 
-		public PhotonenTorpedo(double x, double y, int abweichung, Color fabe, double geschwindigkeit = 1)
-			: base(x, y, Math.Cos((-90 + abweichung) * Math.PI / 180) * 1500 * geschwindigkeit
-				  , Math.Sin((-90 + abweichung) * Math.PI / 180) * 1500 * geschwindigkeit)
+		public Torpedo(double x, double y, int abweichung, Color fabe, double schaden)
+			: base(x, y, Math.Cos((-90 + abweichung) * Math.PI / 180) * 1500
+				  , Math.Sin((-90 + abweichung) * Math.PI / 180) * 1500)
 		{
 			umriss.Width = 3;
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
 			umriss.RenderTransform =  new RotateTransform(abweichung);
-			MySchaden = 10;
+			MySchaden = schaden * 10;
 		}
 
 		public override void Zeichne(Canvas zeichenflaeche)
@@ -267,16 +267,16 @@ namespace Spiel
 		}
 	}
 
-	abstract class PowerUp : SpielObjekt
+	abstract class XpKugel : SpielObjekt
 	{
 		static Random zufall = new Random();
 		Ellipse umriss = new Ellipse();
 
-		public PowerUp(Canvas zeichenflaeche, SolidColorBrush brush)
+		public XpKugel(Canvas zeichenflaeche, SolidColorBrush brush, int groesse)
 			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight)
 		{
-			umriss.Width = 40;
-			umriss.Height = 40;
+			umriss.Width = groesse;
+			umriss.Height = groesse;
 			umriss.Fill = brush;
 		}
 
@@ -293,23 +293,23 @@ namespace Spiel
 		}
 	}
 
-	class WaffenUp : PowerUp
+	class XpKlein : XpKugel
 	{
-		public WaffenUp(Canvas zeichenflaeche) : base(zeichenflaeche, Brushes.BlueViolet)
+		public XpKlein(Canvas zeichenflaeche) : base(zeichenflaeche, Brushes.SaddleBrown, 40)
 		{
 		}
 	}
 
-	class SchildUp : PowerUp
+	class XpMittel : XpKugel
 	{
-		public SchildUp(Canvas zeichenflaeche) : base(zeichenflaeche, Brushes.Plum)
+		public XpMittel(Canvas zeichenflaeche) : base(zeichenflaeche, Brushes.Silver, 35)
 		{
 		}
 	}
 
-	class BombUp : PowerUp
+	class XpHoch : XpKugel
 	{
-		public BombUp(Canvas zeichenflaeche) : base(zeichenflaeche, Brushes.Red)
+		public XpHoch(Canvas zeichenflaeche) : base(zeichenflaeche, Brushes.Gold, 30)
 		{
 		}
 	}

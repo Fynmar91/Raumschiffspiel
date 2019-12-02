@@ -12,21 +12,51 @@
 			<Canvas x:Name="zeichenflaeche" Background="#FF2B2B2B"/>
 		</Border>
 		<Button x:Name="button_start" Content="Start" Click="Button_start_Click" Height="40" Width="120" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,55"/>
-		<TextBlock x:Name="textBlock_score" Margin="17,52,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="154"/>
-		<TextBlock x:Name="textBlock_health" HorizontalAlignment="Left" Margin="17,149,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" FontSize="36" Width="154"/>
-		<ProgressBar x:Name="prograssBar_health" HorizontalAlignment="Left" Height="15" Margin="17,191,0,0" VerticalAlignment="Top" Width="154" Background="#FFE43C3C" Foreground="#FF3DD458"/>
-		<TextBlock x:Name="textBlock_time" HorizontalAlignment="Left" Margin="17,259,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="154"/>
-		<TextBlock x:Name="textBlock_xp" Margin="17,364,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="154"/>
-		<TextBlock x:Name="textBlock_lebenStein" HorizontalAlignment="Left" Margin="17,581,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="154"/>
-		<TextBlock x:Name="textBlock_upgrades" HorizontalAlignment="Left" Margin="17,469,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="154"/>
-		<TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="17,20,0,0" TextWrapping="Wrap" Text="Score" VerticalAlignment="Top" FontSize="24"/>
-		<TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="17,117,0,0" TextWrapping="Wrap" Text="Health" VerticalAlignment="Top" FontSize="24"/>
-		<TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="17,227,0,0" TextWrapping="Wrap" Text="Zeit" VerticalAlignment="Top" FontSize="24"/>
-		<TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" Margin="17,332,0,0" TextWrapping="Wrap" Text="XP" VerticalAlignment="Top" FontSize="24"/>
-		<TextBlock x:Name="textBlock_Copy3" HorizontalAlignment="Left" Margin="17,437,0,0" TextWrapping="Wrap" Text="Upgrades" VerticalAlignment="Top" FontSize="24"/>
-		<TextBlock x:Name="textBlock_Copy4" HorizontalAlignment="Left" Margin="17,549,0,0" TextWrapping="Wrap" Text="Gegner HP" VerticalAlignment="Top" FontSize="24"/>
-		<TextBlock x:Name="textBlock_bomben" HorizontalAlignment="Left" Margin="17,672,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="154"/>
-		<TextBlock x:Name="textBlock_Copy5" HorizontalAlignment="Left" Margin="17,640,0,0" TextWrapping="Wrap" Text="Bomben" VerticalAlignment="Top" FontSize="24"/>
+		<Grid HorizontalAlignment="Left" Height="100" Margin="535,773,0,-4" VerticalAlignment="Top" Width="154">
+			<TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="5,6,0,0" TextWrapping="Wrap" Text="Score" VerticalAlignment="Top" FontSize="24"/>
+			<TextBlock x:Name="textBlock_score" Margin="0,43,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="98"/>
+		</Grid>
+		<Grid HorizontalAlignment="Left" Height="100" Margin="41,161,0,0" VerticalAlignment="Top" Width="154">
+			<TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Health" VerticalAlignment="Top" FontSize="24"/>
+			<TextBlock x:Name="textBlock_health" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" FontSize="36" Width="134"/>
+			<ProgressBar x:Name="prograssBar_health" HorizontalAlignment="Left" Height="15" Margin="0,85,0,0" VerticalAlignment="Top" Width="154" Background="#FFE43C3C" Foreground="#FF3DD458"/>
+		</Grid>
+		<Grid HorizontalAlignment="Left" Height="100" Margin="376,769,0,0" VerticalAlignment="Top" Width="154">
+			<TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Zeit" VerticalAlignment="Top" FontSize="24"/>
+			<TextBlock x:Name="textBlock_time" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="134"/>
+		</Grid>
+		<Grid HorizontalAlignment="Left" Height="100" Margin="1397,59,0,0" VerticalAlignment="Top" Width="152">
+			<TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="XP" VerticalAlignment="Top" FontSize="24"/>
+			<TextBlock x:Name="textBlock_xp" Margin="10,42,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="132"/>
+		</Grid>
+		<Grid HorizontalAlignment="Left" Height="100" Margin="224,769,0,0" VerticalAlignment="Top" Width="152">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="16*"/>
+				<RowDefinition Height="85*"/>
+			</Grid.RowDefinitions>
+			<TextBlock x:Name="textBlock_Copy4" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Gegner HP" VerticalAlignment="Top" FontSize="24" Grid.RowSpan="2"/>
+			<TextBlock x:Name="textBlock_lebenStein" HorizontalAlignment="Left" Margin="10,26.5,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="132" Grid.Row="1"/>
+		</Grid>
+		<Grid HorizontalAlignment="Left" Height="100" Margin="43,266,0,0" VerticalAlignment="Top" Width="152">
+			<TextBlock x:Name="textBlock_Copy5" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Bomben" VerticalAlignment="Top" FontSize="24"/>
+			<TextBlock x:Name="textBlock_bomben" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="132"/>
+		</Grid>
+		
+		<Grid HorizontalAlignment="Left" Height="78" Margin="1397,266,0,0" VerticalAlignment="Top" Width="130">
+			<Button x:Name="button_speedPlus" Content="Speed" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Width="76" Click="Button_speedPlus_Click"/>
+			<TextBlock x:Name="textBlock_speed" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" FontSize="22"/>
+			<TextBlock x:Name="textBlock_speedPreis" HorizontalAlignment="Left" Margin="91,52,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top"/>
+		</Grid>
+		<Grid HorizontalAlignment="Left" Height="78" Margin="1397,174,0,0" VerticalAlignment="Top" Width="130">
+			<Button x:Name="button_dmgPlus" Content="Damage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_dmgPlus_Click" Margin="10,48,0,0"/>
+			<TextBlock x:Name="textBlock_dmg" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
+			<TextBlock x:Name="textBlock_dmgPreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top"/>
+		</Grid>
+		<Grid HorizontalAlignment="Left" Height="78" Margin="1397,349,0,0" VerticalAlignment="Top" Width="130">
+			<Button x:Name="button_upgradePlus" Content="Waffen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_upgradePlus_Click" Margin="10,48,0,0"/>
+			<TextBlock x:Name="textBlock_upgrade" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
+			<TextBlock x:Name="textBlock_upgradePreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="400" VerticalAlignment="Top"/>
+		</Grid>
 
 
 

@@ -30,26 +30,57 @@ namespace Spiel
 			timer.Tick += Update;
 		}
 
-		List<SpielObjekt> spielObjekte = new List<SpielObjekt>();
-		DispatcherTimer timer = new DispatcherTimer();
-		Raumschiff raumschiff = null;
-		static Random zufall = new Random();
-		bool spielLaeuft = false;
-		double zeit;
-		int durchlaeufe;
-		int durchlaeufe2;
-		double score;
-		bool schiessen;
-		int upgrades;
-		const int maxUpgrades = 5;
-		bool alternieren;
-		bool alternieren2;
-		double spawnZeit;
-		int bomben;
+		List<Asteroid> asteroidObjekte = new List<Asteroid>();
+		List<Torpedo> torpedoObjekte = new List<Torpedo>();
+		List<XpKugel> powerUpObjekte = new List<XpKugel>();
 
-		public int xp;
-		public int schiffGeschwindikeit = 400;
-		public double schiffSchaden = 1;
+		Raumschiff raumschiff = null;
+
+		DispatcherTimer timer = new DispatcherTimer();
+		static Random zufall = new Random();
+
+		bool spielLaeuft = false;
+		bool spielPausiert = false;
+		double zeit;
+		double spawnZeit;
+		int durchlaeufe;
+
+		bool schiessen;
+		int schiessWarte;
+		double score;
+		int bomben;
+		int upgrades;
+
+		const int UpgradePreis = 400;
+		const int maxUpgrades = 6;
+
+		int xp;
+		int schiffGeschwindikeit = 400;
+		double schiffSchaden = 1;
+
+		public int MyUpgradePreis
+		{
+			get
+			{
+				return UpgradePreis + upgrades * 200 - 100;
+			}
+		}
+
+		public int MySpeedPreis
+		{
+			get
+			{
+				return Convert.ToInt32(schiffGeschwindikeit - 200);
+			}
+		}
+
+		public int MyDmgPreis
+		{
+			get
+			{
+				return Convert.ToInt32(schiffSchaden * 400 - 200);
+			}
+		}
 
 
 		void Update(object sender, EventArgs e)
@@ -58,47 +89,19 @@ namespace Spiel
 			{
 				zeit += 0.2 * 0.2;
 				spawnZeit += 0.2 * 0.2;
-				textBlock_time.Text = zeit.ToString("0.##");
-				textBlock_score.Text = score.ToString("0.");
-				textBlock_health.Text = raumschiff.MyHP.ToString();
-				prograssBar_health.Value = raumschiff.MyHP;
-				textBlock_lebenStein.Text = (durchlaeufe / 8 + 10).ToString();
-				textBlock_upgrades.Text = upgrades.ToString();
-				textBlock_xp.Text = xp.ToString();
-				textBlock_bomben.Text = bomben.ToString();
 
-				if (raumschiff.MyHP > 0 && durchlaeufe2 < 10)
+				if (raumschiff.MyHP > 0)
 				{
-					raumschiff.Rotieren(zeichenflaeche, zeichenflaeche.PointToScreen(Mouse.GetPosition(this)));
-					List<SpielObjekt> abfall = new List<SpielObjekt>();
-
-					foreach (SpielObjekt spielObjekt in spielObjekte)
-					{
-						if (spielObjekt.Animiere(zeichenflaeche, timer.Interval) && spielObjekt is PhotonenTorpedo)
-						{
-							abfall.Add(spielObjekt);
-						}
-					}
-
-					PruefeKollisionen(abfall);
-
-					zeichenflaeche.Children.Clear();
-
-					foreach (SpielObjekt spielObjekt in spielObjekte)
-					{
-						spielObjekt.Zeichne(zeichenflaeche);
-					}
 					if (spawnZeit + durchlaeufe / 100 > 0.6)
 					{
 						spawnZeit = 0;
 
-						spielObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
+						asteroidObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
 					}
 
-					if (zeit / durchlaeufe >= 5d)
+					if (zeit / durchlaeufe >= 10d)
 					{
 						durchlaeufe += 1;
-						durchlaeufe2 += 1;
 
 						if (raumschiff.MyHP < 97d)
 						{
@@ -109,295 +112,238 @@ namespace Spiel
 							raumschiff.MyHP = 100;
 						}
 
-						foreach (var item in spielObjekte.OfType<PowerUp>())
-						{
-							item.
-						}
+						powerUpObjekte.Clear();
 
-						switch (zufall.Next(0, 6))
+						switch (zufall.Next(0, 8))
 						{
 							case 1:
-								spielObjekte.Add(new WaffenUp(zeichenflaeche));
+								powerUpObjekte.Add(new XpKlein(zeichenflaeche));
 								break;
 							case 2:
-								spielObjekte.Add(new SchildUp(zeichenflaeche));
+								powerUpObjekte.Add(new XpKlein(zeichenflaeche));
 								break;
 							case 3:
-								spielObjekte.Add(new BombUp(zeichenflaeche));
+								powerUpObjekte.Add(new XpKlein(zeichenflaeche));
 								break;
 							case 4:
+								powerUpObjekte.Add(new XpKlein(zeichenflaeche));
+								break;
+							case 5:
+								powerUpObjekte.Add(new XpMittel(zeichenflaeche));
+								break;
+							case 6:
+								powerUpObjekte.Add(new XpMittel(zeichenflaeche));
+								break;
+							case 7:
+								powerUpObjekte.Add(new XpHoch(zeichenflaeche));
 								break;
 							default:
-								spielObjekte.Add(new WaffenUp(zeichenflaeche));
 								break;
 						}
+
 					}
 
 					if (schiessen)
 					{
-						Color fabe1 = Color.FromArgb(255, 0, 255, 255);
-						Color fabe2 = Color.FromArgb(255, 0, 140, 255);
-						Color fabe3 = Color.FromArgb(255, 0, 105, 180);
-						Color fabe4 = Color.FromArgb(255, 128, 105, 180);
-						Color fabe5 = Color.FromArgb(255, 255, 105, 180);
+						List<Color> farbe = new List<Color>();
+						farbe.Add(Color.FromArgb(255, 0, 255, 255));
+						farbe.Add(Color.FromArgb(255, 0, 140, 255));
+						farbe.Add(Color.FromArgb(255, 0, 105, 180));
+						farbe.Add(Color.FromArgb(255, 128, 105, 180));
+						farbe.Add(Color.FromArgb(255, 180, 105, 180));
+						farbe.Add(Color.FromArgb(255, 255, 105, 180));
+						farbe.Add(Color.FromArgb(255, 255, 140, 220));
 
-						switch (upgrades)
+						schiessWarte++;
+
+						for (int i = 0; i < upgrades + 1; i++)
 						{
+							if (i == 0 || ((i >= 1 && i < 3) && schiessWarte % 6 == 0) || (i >= 3 && schiessWarte % 10 == 0))
+							{
+								torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden));
+								torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden));
+							}
 
-							case 0:
-								spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-								break;
-							case 1:
-								if (alternieren)
-								{
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, -3, fabe2));
-									alternieren = false;
-								}
-								else
-								{
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, 3, fabe2));
-									alternieren = true;
-								}
-								break;
-							case 2:
-								if (alternieren)
-								{
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, 6, fabe3));
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, -6, fabe3));
-									alternieren = false;
-								}
-								else
-								{
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, 3, fabe2));
-									spielObjekte.Add(new PhotonenTorpedo(raumschiff, -3, fabe2));
-									alternieren = true;
-								}
-								break;
-							case 3:
-								if (alternieren)
-								{
-									if (alternieren2)
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -9, fabe4));
-									}
-									else
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 6, fabe3));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -6, fabe3));
-									}
-									alternieren = false;
-								}
-								else
-								{
-									if (alternieren2)
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 9, fabe4));
-										alternieren2 = false;
-									}
-									else
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 3, fabe2));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -3, fabe2));
-										alternieren2 = true;
-									}
-									alternieren = true;
-								}
-								break;
-							case 4:
-								if (alternieren)
-								{
-									if (alternieren2)
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -9, fabe4));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 12, fabe5));
-									}
-									else
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 6, fabe3));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -6, fabe3));
-									}
-									alternieren = false;
-								}
-								else
-								{
-									if (alternieren2)
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 9, fabe4));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -12, fabe5));
-										alternieren2 = false;
-									}
-									else
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 3, fabe2));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -3, fabe2));
-										alternieren2 = true;
-									}
-									alternieren = true;
-								}
-								break;
-							case 5:
-								if (alternieren)
-								{
-									if (alternieren2)
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -9, fabe4));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 12, fabe5));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 170, fabe4));
-									}
-									else
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1, 1.2));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 6, fabe3));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -6, fabe3));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 15, fabe1));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -15, fabe1));
-									}
-									alternieren = false;
-								}
-								else
-								{
-									if (alternieren2)
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1, 1.4));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 9, fabe4));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -12, fabe5));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -170, fabe4));
-										alternieren2 = false;
-									}
-									else
-									{
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 0, fabe1, 1.6));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 3, fabe2));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -3, fabe2));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, 12, fabe5));
-										spielObjekte.Add(new PhotonenTorpedo(raumschiff, -12, fabe5));
-										alternieren2 = true;
-									}
-									alternieren = true;
-								}
-								break;
-							default:
-								break;
+							if (i >= 3 && schiessWarte % 3 == 0)
+							{
+								torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[i], schiffSchaden));
+								torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[i], schiffSchaden));
+							}
 						}
 					}
+
+					Animate();
+					UpdateText();
 				}
 				else if (raumschiff.MyHP <= 0)
 				{
 					zeichenflaeche.Children.Clear();
+					asteroidObjekte.Clear();
+					torpedoObjekte.Clear();
+					powerUpObjekte.Clear();
 					raumschiff = null;
-					spielObjekte.Clear();
 					border.Background = Brushes.Red;
 					button_start.IsEnabled = true;
 					spielLaeuft = false;
 					timer.Stop();
 				}
-				else if (durchlaeufe2 >= 10)
+			}
+		}
+
+		void Animate()
+		{
+			raumschiff.Animiere(zeichenflaeche, timer.Interval);
+			raumschiff.Rotieren(zeichenflaeche, zeichenflaeche.PointToScreen(Mouse.GetPosition(this)));
+
+			List<Torpedo> abfall = new List<Torpedo>();
+
+			foreach (var item in asteroidObjekte)
+			{
+				item.Animiere(zeichenflaeche, timer.Interval);
+			}
+
+			foreach (var item in torpedoObjekte)
+			{
+				if (item.Animiere(zeichenflaeche, timer.Interval))
 				{
-					Pause();
+					abfall.Add(item);
+				}
+			}
+
+			foreach (var item in abfall)
+			{
+				torpedoObjekte.Remove(item);
+			}
+
+			PruefeKollisionen();
+
+			zeichenflaeche.Children.Clear();
+			raumschiff.Zeichne(zeichenflaeche);
+
+			foreach (var item in asteroidObjekte)
+			{
+				item.Zeichne(zeichenflaeche);
+			}
+
+			foreach (var item in torpedoObjekte)
+			{
+				item.Zeichne(zeichenflaeche);
+			}
+
+			foreach (var item in powerUpObjekte)
+			{
+				item.Zeichne(zeichenflaeche);
+			}
+		}
+
+		void PruefeKollisionen()
+		{
+			List<Asteroid> abfall_A = new List<Asteroid>();
+			List<Torpedo> abfall_T = new List<Torpedo>();
+			List<XpKugel> abfall_P = new List<XpKugel>();
+
+			foreach (var asteroid in asteroidObjekte)
+			{
+				foreach (var torpedo in torpedoObjekte)
+				{
+					if (asteroid.EnthaeltPunkt(torpedo.MyX, torpedo.MyY))
+					{
+						if (asteroid.Treffer(torpedo.MySchaden))
+						{
+							abfall_A.Add(asteroid);
+							score += 20;
+							xp += 20;
+						}
+
+						abfall_T.Add(torpedo);
+
+					}
 				}
 
+				if (asteroid.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
+				{
+					if (raumschiff.Damage())
+					{
+						abfall_A.Add(asteroid);
+
+						if (upgrades > 1)
+						{
+							upgrades -= 2;
+						}
+						else if (upgrades > 0)
+						{
+							upgrades--;
+						}
+					}
+					else
+					{
+						abfall_A.Add(asteroid);
+					}
+				}
 			}
+
+			foreach (var item in powerUpObjekte)
+			{
+				if (item.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
+				{
+					if (item is XpKlein)
+					{
+						xp += 50;
+					}
+					else if (item is XpMittel)
+					{
+						xp += 100;
+					}
+					else if (item is XpHoch)
+					{
+						xp += 200;
+					}
+
+					abfall_P.Add(item);
+				}
+			}
+
+			foreach (var item in abfall_A)
+			{
+				asteroidObjekte.Remove(item);
+			}
+			foreach (var item in abfall_T)
+			{
+				torpedoObjekte.Remove(item);
+			}
+			foreach (var item in abfall_P)
+			{
+				powerUpObjekte.Remove(item);
+			}
+		}
+
+		void UpdateText()
+		{
+			textBlock_time.Text = zeit.ToString("0.##");
+			textBlock_score.Text = score.ToString("0.");
+			textBlock_health.Text = raumschiff.MyHP.ToString();
+			prograssBar_health.Value = raumschiff.MyHP;
+			textBlock_lebenStein.Text = (durchlaeufe / 8 + 10).ToString();
+			textBlock_xp.Text = xp.ToString();
+			textBlock_bomben.Text = bomben.ToString();
+			textBlock_speed.Text = schiffGeschwindikeit.ToString();
+			textBlock_dmg.Text = schiffSchaden.ToString();
+			textBlock_upgrade.Text = upgrades.ToString();
+			textBlock_upgradePreis.Text = MyUpgradePreis.ToString();
+			textBlock_dmgPreis.Text = MyDmgPreis.ToString();
+			textBlock_speedPreis.Text = MySpeedPreis.ToString();
 		}
 
 		void Pause()
 		{
+			spielPausiert = true;
 			timer.Stop();
-			Upgrades upgrades = new Upgrades(this);
-			upgrades.Show();
 		}
 
 		public void Weiter()
 		{
+			spielPausiert = false;
 			timer.Start();
-			durchlaeufe2 = 0;
-			zeit = 0;
-		}
-
-		void PruefeKollisionen(List<SpielObjekt> abfall)
-		{
-			foreach (Asteroid asteroid in spielObjekte.OfType<Asteroid>())
-			{
-				foreach (PhotonenTorpedo photonenTorpedo in spielObjekte.OfType<PhotonenTorpedo>())
-				{
-					if (asteroid.EnthaeltPunkt(photonenTorpedo.MyX, photonenTorpedo.MyY))
-					{
-						if (asteroid.Treffer(photonenTorpedo.MySchaden))
-						{
-							abfall.Add(asteroid);
-							score += 20;
-							xp += 20;
-						}
-						abfall.Add(photonenTorpedo);
-
-
-					}
-				}
-				foreach (Raumschiff raumschiff in spielObjekte.OfType<Raumschiff>())
-				{
-					if (asteroid.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
-					{
-						if (raumschiff.Damage())
-						{
-							abfall.Add(asteroid);
-
-							if (upgrades > 1)
-							{
-								upgrades -= 2;
-							}
-							else if (upgrades > 0)
-							{
-								upgrades--;
-							}
-						}
-						else
-						{
-							abfall.Add(asteroid);
-						}
-					}
-				}
-			}
-
-			foreach (PowerUp powerUp in spielObjekte.OfType<PowerUp>())
-			{
-				if (powerUp.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
-				{
-					if (powerUp is WaffenUp)
-					{
-						if (upgrades < maxUpgrades)
-						{
-							upgrades++;
-						}
-						else if (upgrades >= maxUpgrades)
-						{
-
-						}
-					}
-					else if (powerUp is SchildUp)
-					{
-						raumschiff.StarteSchilde();
-					}
-					else if (powerUp is BombUp)
-					{
-						bomben = 3;
-					}
-
-					abfall.Add(powerUp);
-				}
-			}
-
-			foreach (SpielObjekt spielObjekt in abfall)
-			{
-				spielObjekte.Remove(spielObjekt);
-			}
 		}
 
 		private void Button_start_Click(object sender, RoutedEventArgs e)
@@ -412,16 +358,20 @@ namespace Spiel
 			xp = 0;
 			bomben = 3;
 			prograssBar_health.Value = 100;
-			textBlock_health.Text = "100";
-			textBlock_score.Text = "000";
+			schiffGeschwindikeit = 400;
+			spawnZeit = 0;
+			schiessWarte = 0;
+			schiffSchaden = 1;
+			asteroidObjekte = new List<Asteroid>();
+			torpedoObjekte = new List<Torpedo>();
+			powerUpObjekte = new List<XpKugel>();
 			border.Background = Brushes.Black;
 			raumschiff = new Raumschiff(zeichenflaeche);
-			spielObjekte.Add(raumschiff);
 			timer.Start();
 
 			for (int i = 0; i < 4; i++)
 			{
-				spielObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
+				asteroidObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
 			}
 		}
 
@@ -443,14 +393,21 @@ namespace Spiel
 					case Key.D:
 						raumschiff.MyXvel = schiffGeschwindikeit;
 						break;
-					case Key.F:
+					case Key.R:
 						if (upgrades < maxUpgrades)
 						{
 							upgrades += 1;
 						}
 						break;
-					case Key.R:
-						Pause();
+					case Key.F:
+						if (spielPausiert == true)
+						{
+							Weiter();
+						}
+						else
+						{
+							Pause();
+						}
 						break;
 					default:
 						break;
@@ -501,7 +458,10 @@ namespace Spiel
 
 		private void Window_MouseUp(object sender, MouseButtonEventArgs e)
 		{
-			schiessen = false;
+			if (e.ChangedButton == MouseButton.Left)
+			{
+				schiessen = false;
+			}
 		}
 
 		private void Bombe()
@@ -510,8 +470,41 @@ namespace Spiel
 
 			for (int i = 0; i < 360; i += 10)
 			{
-				spielObjekte.Add(new PhotonenTorpedo(p.X - 210, p.Y - 30, i, Color.FromArgb(255, 255, 0, 0)));
+				torpedoObjekte.Add(new Torpedo(p.X - 210, p.Y - 30, i, Color.FromArgb(255, 255, 0, 0), schiffSchaden));
 			}
+		}
+
+		private void Button_speedPlus_Click(object sender, RoutedEventArgs e)
+		{
+			if (xp >= MySpeedPreis)
+			{
+				xp -= MySpeedPreis;
+				schiffGeschwindikeit += 20;
+			}
+
+			UpdateText();
+		}
+
+		private void Button_dmgPlus_Click(object sender, RoutedEventArgs e)
+		{
+			if (xp >= MyDmgPreis)
+			{
+				xp -= MyDmgPreis;
+				schiffSchaden += 0.1;
+			}
+
+			UpdateText();
+		}
+
+		private void Button_upgradePlus_Click(object sender, RoutedEventArgs e)
+		{
+			if (xp >= MyUpgradePreis && upgrades < maxUpgrades)
+			{
+				xp -= MyUpgradePreis;
+				upgrades++;
+			}
+
+			UpdateText();
 		}
 	}
 }
