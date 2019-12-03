@@ -22,7 +22,8 @@ namespace Spiel
 		{
 			if (MyX - zeichenflaeche.ActualWidth < MyX)
 			{
-				if ((MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY - zeichenflaeche.ActualHeight && (MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY)
+				if ((MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY - zeichenflaeche.ActualHeight 
+						&& (MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY)
 				{
 					MyX = zeichenflaeche.ActualWidth;
 				}
@@ -66,7 +67,7 @@ namespace Spiel
 			}
 			umriss.Fill = Brushes.Gray;
 
-			leben = multiplier / 4 + 20 + extraLeben;
+			leben = multiplier + 40 + extraLeben;
 		}
 
 		public override bool Zeichne(Canvas zeichenflaeche)

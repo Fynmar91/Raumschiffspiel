@@ -40,8 +40,8 @@ namespace Spiel
 		DispatcherTimer timer = new DispatcherTimer();
 		static Random zufall = new Random();
 
-		bool spielLaeuft = false;
-		bool spielPausiert = false;
+		bool spielLaeuft;
+		bool spielPausiert;
 		double zeit;
 		double spawnZeit;
 		int durchlaeufe;
@@ -52,7 +52,6 @@ namespace Spiel
 		double score;
 		int bomben;
 
-		const int UpgradePreis = 400;
 		const int maxUpgrades = 6;
 		const int maxRaketen = 6;
 
@@ -63,11 +62,11 @@ namespace Spiel
 		int schiffRaketen;
 		bool umlenkung;
 
-		public int MyUpgradePreis
+		public int MyWaffenPreis
 		{
 			get
 			{
-				return UpgradePreis + schiffWaffen * 200 - 100;
+				return (schiffWaffen + 1) * 800 + 200;
 			}
 		}
 
@@ -75,7 +74,7 @@ namespace Spiel
 		{
 			get
 			{
-				return Convert.ToInt32(schiffGeschwindikeit - 200);
+				return Convert.ToInt32(((double)schiffGeschwindikeit / (double)400) * (double)800 - 400);
 			}
 		}
 
@@ -83,7 +82,7 @@ namespace Spiel
 		{
 			get
 			{
-				return Convert.ToInt32(schiffSchaden * 400 - 200);
+				return Convert.ToInt32(schiffSchaden * 800 - 400);
 			}
 		}
 
@@ -91,7 +90,7 @@ namespace Spiel
 		{
 			get
 			{
-				return Convert.ToInt32(schiffRaketen * 400 + 400);
+				return Convert.ToInt32(schiffRaketen * 800 + 800);
 			}
 		}
 
@@ -159,15 +158,16 @@ namespace Spiel
 
 						if (durchlaeufe / level > 5)
 						{
-							asteroidObjekte.Add(new Asteroid(zeichenflaeche, 0, Convert.ToInt32(zeichenflaeche.ActualHeight / 4), level * 200));
+							asteroidObjekte.Add(new Asteroid(zeichenflaeche, 0, 
+									Convert.ToInt32(zeichenflaeche.ActualHeight / 4), level * 400));
 							level++;
 						}
 
 					}
 
-					if (xp >= MyUpgradePreis && schiffWaffen < maxUpgrades && checkBox_autoUpgrade.IsChecked == true)
+					if (xp >= MyWaffenPreis && schiffWaffen < maxUpgrades && checkBox_autoUpgrade.IsChecked == true)
 					{
-						xp -= MyUpgradePreis;
+						xp -= MyWaffenPreis;
 						schiffWaffen++;
 						UpdateText();
 					}
@@ -206,8 +206,8 @@ namespace Spiel
 						}
 					}
 
-					Animate();
 					UpdateText();
+					Animate();
 				}
 				else if (raumschiff.MyHP <= 0)
 				{
@@ -414,7 +414,7 @@ namespace Spiel
 			textBlock_speed.Text = schiffGeschwindikeit.ToString();
 			textBlock_dmg.Text = schiffSchaden.ToString();
 			textBlock_upgrade.Text = schiffWaffen.ToString();
-			textBlock_upgradePreis.Text = MyUpgradePreis.ToString();
+			textBlock_upgradePreis.Text = MyWaffenPreis.ToString();
 			textBlock_dmgPreis.Text = MyDmgPreis.ToString();
 			textBlock_speedPreis.Text = MySpeedPreis.ToString();
 			textBlock_UmlenkungPreis.Text = "1000";
@@ -480,22 +480,26 @@ namespace Spiel
 		private void Button_start_Click(object sender, RoutedEventArgs e)
 		{
 			spielLaeuft = true;
-			button_start.IsEnabled = false;
+			spielPausiert = false;
 			zeit = 0;
-			score = 0;
-			durchlaeufe = 1;
-			schiessen = false;
-			schiffWaffen = 0;
-			xp = 0;
-			bomben = 3;
-			prograssBar_health.Value = 100;
-			schiffGeschwindikeit = 400;
 			spawnZeit = 0;
-			schiessWarte = 0;
-			schiffSchaden = 1;
+			durchlaeufe = 1;
 			level = 1;
+
+			schiessen = false;
+			schiessWarte = 0;
+			score = 0;
+			bomben = 3;
+
+			xp = 2000;
+			schiffWaffen = 0;
+			schiffGeschwindikeit = 400;
+			schiffSchaden = 1;
 			schiffRaketen = 0;
 			umlenkung = false;
+
+			button_start.IsEnabled = false;
+			prograssBar_health.Value = 100;
 			border.Background = Brushes.Black;
 			raumschiff = new Raumschiff(zeichenflaeche);
 			timer.Start();
@@ -601,7 +605,7 @@ namespace Spiel
 			if (xp >= MySpeedPreis)
 			{
 				xp -= MySpeedPreis;
-				schiffGeschwindikeit += 20;
+				schiffGeschwindikeit += 40;
 			}
 
 			UpdateText();
@@ -620,9 +624,9 @@ namespace Spiel
 
 		private void Button_upgradePlus_Click(object sender, RoutedEventArgs e)
 		{
-			if (xp >= MyUpgradePreis && schiffWaffen < maxUpgrades)
+			if (xp >= MyWaffenPreis && schiffWaffen < maxUpgrades)
 			{
-				xp -= MyUpgradePreis;
+				xp -= MyWaffenPreis;
 				schiffWaffen++;
 			}
 
