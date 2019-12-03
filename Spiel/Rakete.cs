@@ -22,7 +22,7 @@ namespace Spiel
 			umriss.Width = 5;
 			umriss.Height = 20;
 			umriss.Fill = new SolidColorBrush(fabe);
-			MySchaden = schaden * 5;
+			MySchaden = schaden * 2;
 		}
 
 		public void Ziel(Vector vector)

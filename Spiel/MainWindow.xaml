@@ -68,6 +68,10 @@
 			<TextBlock x:Name="textBlock_Raketen" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
 			<TextBlock x:Name="textBlock_RaketenPreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="00" VerticalAlignment="Top"/>
 		</Grid>
+		<TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="966,814,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+		<TextBlock x:Name="textBlock1_Copy" HorizontalAlignment="Left" Margin="1020,814,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+		<TextBlock x:Name="textBlock1_Copy1" HorizontalAlignment="Left" Margin="1074,814,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+		<TextBlock x:Name="textBlock1_Copy2" HorizontalAlignment="Left" Margin="1128,814,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
 
 
 

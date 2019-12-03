@@ -17,7 +17,7 @@ namespace Spiel
 		Ellipse schild = new Ellipse();
 		int schildRadius = 100;
 
-		RotateTransform rotation = null;
+		RotateTransform rotation = new RotateTransform();
 		public RotateTransform Rotation { get => rotation; }
 		public int MyHP { get; set; }
 		public int MySchild { get; set; }

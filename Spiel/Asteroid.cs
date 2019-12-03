@@ -19,7 +19,7 @@ namespace Spiel
 
 		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 24)
 			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
-					(zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 6))
+					(zufall.NextDouble() - 0.5) * 800 * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 800 * (1 + multiplier / 6))
 		{
 			if (MyX - zeichenflaeche.ActualWidth < MyX)
 			{
@@ -68,7 +68,7 @@ namespace Spiel
 			}
 			umriss.Fill = Brushes.Gray;
 
-			MyLeben = multiplier + 40;
+			MyLeben = multiplier + 20;
 			MyMass = 33;
 		}
 

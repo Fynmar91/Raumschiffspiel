@@ -18,6 +18,7 @@ namespace Spiel
 		public double MyYvel { get; set; }
 
 
+
 		protected SpielObjekt(double x, double y)
 		{
 			this.MyX = x;

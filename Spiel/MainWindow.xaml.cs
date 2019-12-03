@@ -95,21 +95,20 @@ namespace Spiel
 			}
 		}
 
-
 		void Update(object sender, EventArgs e)
 		{
 			if (spielLaeuft == true)
 			{
-				zeit += 0.2 * 0.2;
-				spawnZeit += 0.2 * 0.2;
+				zeit += 0.02;
+				spawnZeit -= 1;
 
 				if (raumschiff.MyHP > 0)
 				{
-					if (spawnZeit + durchlaeufe / 100 > 0.6)
+					if (spawnZeit <= 0)
 					{
-						spawnZeit = 0;
+						spawnZeit = 10;
 
-						if (asteroidObjekte.Count() < 20)
+						if (asteroidObjekte.Count() < 16)
 						{
 							asteroidObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
 						}
@@ -187,19 +186,26 @@ namespace Spiel
 
 						for (int i = 0; i < schiffWaffen + 1; i++)
 						{
-							if (i == 0 || ((i >= 1 && i < 3) && schiessWarte % 6 == 0) || (i >= 3 && schiessWarte % 10 == 0))
+							if (i == 0 || (i == 1 && schiessWarte % 5 == 0) || (i == 2 && schiessWarte % 6 == 0) 
+									|| (i == 3 && schiessWarte % 7 == 0) || (i == 4 && schiessWarte % 7 == 0) || (i == 5 && schiessWarte % 7 == 0) || (i == 6 && schiessWarte % 7 == 0))
 							{
-								torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden, 24 - i * 3));
-								torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden, 24 - i * 3));
+								torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4));
+								torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4));
 							}
 
-							if (i >= 3 && schiessWarte % 3 == 0)
+							if (schiffWaffen > 2 && i == 0)
 							{
-								torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[i], schiffSchaden, 10));
-								torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[i], schiffSchaden, 10));
+								torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[6], schiffSchaden, 6));
+								torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[6], schiffSchaden, 6));
 							}
 
-							if (schiffRaketen > 0 && schiessWarte % (10 - schiffRaketen) == 0)
+							if (schiffWaffen > 4 && i == 0)
+							{
+								torpedoObjekte.Add(new Torpedo(raumschiff, 120, farbe[1], schiffSchaden, 10));
+								torpedoObjekte.Add(new Torpedo(raumschiff, -120 , farbe[1], schiffSchaden, 10));
+							}
+
+							if (schiffRaketen > 0 && schiessWarte % (20 - schiffRaketen / 2) == 0)
 							{
 								raketeObjekte.Add(new Rakete(raumschiff, farbe[i], schiffSchaden));
 							}
@@ -225,21 +231,19 @@ namespace Spiel
 			}
 		}
 
+		[STAThread]
 		void Animate()
 		{
 			List<Torpedo> abfall_T = new List<Torpedo>();
 
-			
-			new Thread(() =>
-			{
-				Bewegen();
-				GeschosseBewegen();
-
-			}).Start();
+			Bewegen();
+			GeschosseBewegen();
 
 			PruefeKollisionen();
 
 			zeichenflaeche.Children.Clear();
+
+			raumschiff.Rotieren(zeichenflaeche, zeichenflaeche.PointToScreen(Mouse.GetPosition(this)));
 			raumschiff.Zeichne(zeichenflaeche);
 
 			foreach (var item in torpedoObjekte)
@@ -274,7 +278,6 @@ namespace Spiel
 		void Bewegen()
 		{
 			raumschiff.Animiere(zeichenflaeche, timer.Interval);
-			raumschiff.Rotieren(zeichenflaeche, zeichenflaeche.PointToScreen(Mouse.GetPosition(this)));
 
 			foreach (var item in asteroidObjekte)
 			{
@@ -343,7 +346,7 @@ namespace Spiel
 								score += 20;
 								xp += 20;
 							}
-
+							break;
 						}
 
 						abfall_T.Add(torpedo);
@@ -368,6 +371,7 @@ namespace Spiel
 								score += 20;
 								xp += 20;
 							}
+							break;
 						}
 
 						abfall_R.Add(rakete);
@@ -411,22 +415,8 @@ namespace Spiel
 					}
 					else if (item is XpHoch)
 					{
-						switch (bomben)
-						{
-							case 3:
-								Bombe(new Point(raumschiff.MyX, raumschiff.MyY));
-								break;
-							case 2:
-								Bombe(new Point(raumschiff.MyX - 5, raumschiff.MyY));
-								break;
-							case 1:
-								Bombe(new Point(raumschiff.MyX, raumschiff.MyY + 5));
-								break;
-							default:
-								break;
-						}
 						xp += 200;
-						bomben = 3;
+						bomben += 3;
 					}
 
 					abfall_P.Add(item);
@@ -470,6 +460,12 @@ namespace Spiel
 			textBlock_Umlenkung.Text = Convert.ToInt32(umlenkung).ToString();
 			textBlock_Raketen.Text = schiffRaketen.ToString();
 			textBlock_RaketenPreis.Text = MyRaketenPreis.ToString();
+
+
+			textBlock1.Text = asteroidObjekte.Count().ToString();
+			textBlock1_Copy.Text = torpedoObjekte.Count().ToString();
+			textBlock1_Copy1.Text = powerUpObjekte.Count().ToString();
+			textBlock1_Copy2.Text = raketeObjekte.Count().ToString();
 		}
 
 		void Pause()
