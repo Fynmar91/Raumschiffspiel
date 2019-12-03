@@ -33,7 +33,7 @@ namespace Spiel
 			umriss.Width = 3;
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
-			MySchaden = schaden * 40;
+			MySchaden = schaden * 80;
 			this.leben = leben;
 		}
 

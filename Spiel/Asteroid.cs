@@ -14,15 +14,16 @@ namespace Spiel
 	{
 		static Random zufall = new Random();
 		Polygon umriss = new Polygon();
-		double leben;
+		public double MyLeben { get; set; }
+		public int MyMass { get; set; }
 
-		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 24, int extraLeben = 0)
+		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 24)
 			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
 					(zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 400 * (1 + multiplier / 6))
 		{
 			if (MyX - zeichenflaeche.ActualWidth < MyX)
 			{
-				if ((MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY - zeichenflaeche.ActualHeight 
+				if ((MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY - zeichenflaeche.ActualHeight
 						&& (MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY)
 				{
 					MyX = zeichenflaeche.ActualWidth;
@@ -67,7 +68,8 @@ namespace Spiel
 			}
 			umriss.Fill = Brushes.Gray;
 
-			leben = multiplier + 40 + extraLeben;
+			MyLeben = multiplier + 40;
+			MyMass = 33;
 		}
 
 		public override bool Zeichne(Canvas zeichenflaeche)
@@ -85,8 +87,18 @@ namespace Spiel
 
 		public bool Treffer(double schaden)
 		{
-			leben -= schaden;
-			return leben <= 0;
+			MyLeben -= schaden;
+			return MyLeben <= 0;
+		}
+	}
+
+	class BossAsteroid : Asteroid
+	{
+		public BossAsteroid(Canvas zeichenflaeche, int multiplier)
+			: base(zeichenflaeche, multiplier, Convert.ToInt32(zeichenflaeche.ActualHeight / 8))
+		{
+			MyLeben = multiplier * 100 + 400;
+			MyMass = 99;
 		}
 	}
 }

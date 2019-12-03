@@ -61,27 +61,37 @@ namespace Spiel
 			umriss.RenderTransform = rotation;
 		}
 
-		public bool Damage()
+		public bool Damage(int mass)
 		{
-			switch (MySchild)
+			if (mass <= 33)
 			{
-				case 3:
-					MySchild--;
-					schildRadius = 80;
-					return false;
-				case 2:
-					MySchild--;
-					schildRadius = 60;
-					return false;
-				case 1:
-					MySchild = 0;
-					schild.Fill.Opacity = 0;
-					return false;
-				case 0:
-					MyHP -= 33;
-					return true;
-				default:
-					return true;
+				switch (MySchild)
+				{
+					case 3:
+						MySchild--;
+						schildRadius = 80;
+						return false;
+					case 2:
+						MySchild--;
+						schildRadius = 60;
+						return false;
+					case 1:
+						MySchild = 0;
+						schild.Fill.Opacity = 0;
+						return false;
+					case 0:
+						MyHP -= mass;
+						return true;
+					default:
+						return true;
+				}
+			}
+			else
+			{
+				MyHP -= mass;
+				MySchild = 0;
+				schild.Fill.Opacity = 0;
+				return true;
 			}
 		}
 
