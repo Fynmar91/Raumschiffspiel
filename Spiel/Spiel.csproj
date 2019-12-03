@@ -55,7 +55,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Asteroid.cs" />
+    <Compile Include="Rakete.cs" />
+    <Compile Include="Raumschiff.cs" />
     <Compile Include="SpielObjekt.cs" />
+    <Compile Include="Torpedo.cs" />
+    <Compile Include="XpKugel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
