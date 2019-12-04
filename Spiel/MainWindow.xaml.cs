@@ -67,7 +67,7 @@ namespace Spiel
 		{
 			get
 			{
-				return (schiffWaffen + 1) * 800 + 200;
+				return (schiffWaffen + 1) * 400 + 200;
 			}
 		}
 
@@ -118,9 +118,9 @@ namespace Spiel
 					{
 						durchlaeufe += 1;
 
-						if (raumschiff.MyHP < 97d)
+						if (raumschiff.MyHP < 95d)
 						{
-							raumschiff.MyHP += 3;
+							raumschiff.MyHP += 5;
 						}
 						else
 						{
@@ -384,13 +384,9 @@ namespace Spiel
 					{
 						abfall_A.Add(asteroid);
 
-						if (schiffWaffen > 1)
+						if (xp > 100)
 						{
-							schiffWaffen -= 2;
-						}
-						else if (schiffWaffen > 0)
-						{
-							schiffWaffen--;
+							xp -= 100;
 						}
 					}
 					else

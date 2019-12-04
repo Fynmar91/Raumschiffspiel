@@ -8,15 +8,15 @@
         Title="MainWindow" Height="900" Width="1600"
         KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseDown="Window_MouseDown" MouseUp="Window_MouseUp">
 	<Grid>
-		<Border x:Name="border" BorderBrush="Black" BorderThickness="1" Margin="200,20,200,100" Background="Black" Padding="10">
-			<Canvas x:Name="zeichenflaeche" Background="#FF2B2B2B" Focusable="True"/>
+		<Border x:Name="border" BorderBrush="Black" BorderThickness="1" Margin="200,20,200,100" Background="Black" Padding="10" Width="1192" Height="749" VerticalAlignment="Center" HorizontalAlignment="Center">
+			<Canvas x:Name="zeichenflaeche" Background="#FF2B2B2B" Focusable="True" Width="1170" Height="727"/>
 		</Border>
 		<Button x:Name="button_start" Content="Start" Click="Button_start_Click" Height="40" Width="120" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,55" Focusable="False"/>
 		<Grid HorizontalAlignment="Left" Height="100" Margin="535,773,0,-4" VerticalAlignment="Bottom" Width="154">
 			<TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="5,6,0,0" TextWrapping="Wrap" Text="Score" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_score" Margin="0,43,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="98"/>
 		</Grid>
-		<Grid HorizontalAlignment="Left" Height="100" Margin="41,161,0,0" VerticalAlignment="Top" Width="154">
+		<Grid HorizontalAlignment="Left" Height="100" Margin="25,146,0,0" VerticalAlignment="Top" Width="154">
 			<TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Health" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_health" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" FontSize="36" Width="134"/>
 			<ProgressBar x:Name="prograssBar_health" HorizontalAlignment="Left" Height="15" Margin="0,85,0,0" VerticalAlignment="Top" Width="154" Background="#FFE43C3C" Foreground="#FF3DD458"/>
@@ -25,7 +25,7 @@
 			<TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Zeit" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_time" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="134"/>
 		</Grid>
-		<Grid HorizontalAlignment="Right" Height="100" Margin="0,43,43,0" VerticalAlignment="Top" Width="152">
+		<Grid HorizontalAlignment="Right" Height="100" Margin="0,116,28,0" VerticalAlignment="Top" Width="152">
 			<TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="XP" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_xp" Margin="10,42,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="132"/>
 		</Grid>
@@ -37,41 +37,41 @@
 			<TextBlock x:Name="textBlock_Copy4" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Gegner HP" VerticalAlignment="Top" FontSize="24" Grid.RowSpan="2"/>
 			<TextBlock x:Name="textBlock_lebenStein" HorizontalAlignment="Left" Margin="10,26.5,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="132" Grid.Row="1"/>
 		</Grid>
-		<Grid HorizontalAlignment="Left" Height="100" Margin="43,266,0,0" VerticalAlignment="Top" Width="152">
+		<Grid HorizontalAlignment="Left" Height="100" Margin="25,251,0,0" VerticalAlignment="Top" Width="152">
 			<TextBlock x:Name="textBlock_Copy5" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Bomben" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_bomben" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="132"/>
 		</Grid>
-		
-		<Grid HorizontalAlignment="Right" Height="78" Margin="0,231,65,0" VerticalAlignment="Top" Width="130">
+
+		<Grid HorizontalAlignment="Right" Height="78" Margin="0,304,50,0" VerticalAlignment="Top" Width="130">
 			<Button x:Name="button_speedPlus" Content="Speed" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Width="76" Click="Button_speedPlus_Click" Focusable="False"/>
 			<TextBlock x:Name="textBlock_speed" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" FontSize="22"/>
 			<TextBlock x:Name="textBlock_speedPreis" HorizontalAlignment="Left" Margin="91,52,0,0" TextWrapping="Wrap" Text="00" VerticalAlignment="Top"/>
 		</Grid>
-		<Grid HorizontalAlignment="Right" Height="78" Margin="0,148,65,0" VerticalAlignment="Top" Width="130">
+		<Grid HorizontalAlignment="Right" Height="78" Margin="0,222,50,0" VerticalAlignment="Top" Width="130">
 			<Button x:Name="button_dmgPlus" Content="Damage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_dmgPlus_Click" Margin="10,48,0,0" Focusable="False"/>
 			<TextBlock x:Name="textBlock_dmg" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
 			<TextBlock x:Name="textBlock_dmgPreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="00" VerticalAlignment="Top"/>
 		</Grid>
-		<Grid HorizontalAlignment="Right" Height="78" Margin="0,314,65,0" VerticalAlignment="Top" Width="130">
+		<Grid HorizontalAlignment="Right" Height="78" Margin="0,388,50,0" VerticalAlignment="Top" Width="130">
 			<Button x:Name="button_upgradePlus" Content="Waffen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_upgradePlus_Click" Margin="10,48,0,0" Focusable="False"/>
 			<TextBlock x:Name="textBlock_upgrade" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
 			<TextBlock x:Name="textBlock_upgradePreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="00" VerticalAlignment="Top"/>
 			<CheckBox x:Name="checkBox_autoUpgrade" Content="Auto" HorizontalAlignment="Left" Margin="74,10,0,0" VerticalAlignment="Top" IsChecked="True" Focusable="False"/>
 		</Grid>
-		<Grid HorizontalAlignment="Right" Height="78" Margin="0,397,65,0" VerticalAlignment="Top" Width="130">
+		<Grid HorizontalAlignment="Right" Height="78" Margin="0,470,50,0" VerticalAlignment="Top" Width="130">
 			<Button x:Name="button_UmlenkungPlus" Content="Umlenkung" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_UmlenkungPlus_Click" Margin="10,48,0,0" Focusable="False"/>
 			<TextBlock x:Name="textBlock_Umlenkung" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
 			<TextBlock x:Name="textBlock_UmlenkungPreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="00" VerticalAlignment="Top"/>
 		</Grid>
-		<Grid HorizontalAlignment="Right" Height="78" Margin="0,480,65,0" VerticalAlignment="Top" Width="130">
+		<Grid HorizontalAlignment="Right" Height="78" Margin="0,554,50,0" VerticalAlignment="Top" Width="130">
 			<Button x:Name="button_RaketenPlus" Content="Raketen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_RaketenPlus_Click" Margin="10,48,0,0" Focusable="False"/>
 			<TextBlock x:Name="textBlock_Raketen" HorizontalAlignment="Left" TextWrapping="Wrap" Text="00" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="22"/>
 			<TextBlock x:Name="textBlock_RaketenPreis" HorizontalAlignment="Left" Margin="90,52,0,0" TextWrapping="Wrap" Text="00" VerticalAlignment="Top"/>
 		</Grid>
-		<TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="966,814,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
-		<TextBlock x:Name="textBlock1_Copy" HorizontalAlignment="Left" Margin="1020,814,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
-		<TextBlock x:Name="textBlock1_Copy1" HorizontalAlignment="Left" Margin="1074,814,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
-		<TextBlock x:Name="textBlock1_Copy2" HorizontalAlignment="Left" Margin="1128,814,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+		<TextBlock x:Name="textBlock1" HorizontalAlignment="Right" Margin="0,0,392,67" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>
+		<TextBlock x:Name="textBlock1_Copy" HorizontalAlignment="Right" Margin="0,0,338,67" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>
+		<TextBlock x:Name="textBlock1_Copy1" HorizontalAlignment="Right" Margin="0,0,284,67" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>
+		<TextBlock x:Name="textBlock1_Copy2" HorizontalAlignment="Right" Margin="0,0,230,67" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>
 
 
 

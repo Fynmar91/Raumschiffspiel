@@ -41,22 +41,26 @@ namespace Spiel
 			if (MyX < 0)
 			{
 				MyXvel = -MyXvel;
+				MyX = 0;
 				return true;
 			}
 			else if (MyX > zeichenflaeche.ActualWidth)
 			{
 				MyXvel = -MyXvel;
+				MyX = zeichenflaeche.ActualWidth;
 				return true;
 			}
 
 			if (MyY < 0)
 			{
 				MyYvel = -MyYvel;
+				MyY = 0;
 				return true;
 			}
 			else if (MyY > zeichenflaeche.ActualHeight)
 			{
 				MyYvel = -MyYvel;
+				MyY = zeichenflaeche.ActualHeight;
 				return true;
 			}
 
