@@ -15,7 +15,7 @@ namespace Spiel
 		Point mausPos;
 		Polygon umriss = new Polygon();
 		Ellipse schild = new Ellipse();
-		int schildRadius = 100;
+		int schildRadius = 0;
 
 		RotateTransform rotation = new RotateTransform();
 		public RotateTransform Rotation { get => rotation; }
@@ -67,13 +67,17 @@ namespace Spiel
 			{
 				switch (MySchild)
 				{
+					case 4:
+						MySchild--;
+						schildRadius = 90;
+						return false;
 					case 3:
 						MySchild--;
-						schildRadius = 80;
+						schildRadius = 60;
 						return false;
 					case 2:
 						MySchild--;
-						schildRadius = 60;
+						schildRadius = 30;
 						return false;
 					case 1:
 						MySchild = 0;
@@ -97,9 +101,17 @@ namespace Spiel
 
 		public void StarteSchilde()
 		{
-			MySchild = 3;
+			if (MySchild < 3)
+			{
+				MySchild += 2;
+				schildRadius += 60;
+			}
+			else if (MySchild == 3)
+			{
+				MySchild = 4;
+				schildRadius = 120;
+			}
 			schild.Fill.Opacity = 100;
-			schildRadius = 100;
 		}
 	}
 }
