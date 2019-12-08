@@ -10,39 +10,55 @@ using System.Windows.Shapes;
 
 namespace Spiel
 {
-	abstract class Gegner : SpielObjekt
+	class Asteroid : SpielObjekt
 	{
-		protected static Random zufall = new Random();
-		protected Polygon umriss = new Polygon();
+		static Random zufall = new Random();
+		Polygon umriss = new Polygon();
 		public double MyLeben { get; set; }
 		public int MyMass { get; set; }
 
-		protected Gegner(double x, double y, double vx, double vy, double breite, double hoehe) : base(x, y, vx, vy, breite, hoehe)
+		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 24)
+			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
+					(zufall.NextDouble() - 0.5) * 800 * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 800 * (1 + multiplier / 6))
 		{
-			MyKollision = new Rect(MyX, MyY, umriss.ActualWidth, umriss.ActualHeight);
-		}
-		public override bool Zeichne(Canvas zeichenflaeche)
-		{
-			zeichenflaeche.Children.Add(umriss);
-			Canvas.SetLeft(umriss, MyX);
-			Canvas.SetTop(umriss, MyY);
-			return false;
-		}
+			if (MyX - zeichenflaeche.ActualWidth < MyX)
+			{
+				if ((MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY - zeichenflaeche.ActualHeight
+						&& (MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY)
+				{
+					MyX = zeichenflaeche.ActualWidth;
+				}
+				else
+				{
+					if (MyY - zeichenflaeche.ActualHeight < MyY)
+					{
+						MyY = zeichenflaeche.ActualHeight;
+					}
+					else
+					{
+						MyY = 0;
+					}
+				}
 
-		public bool Treffer(double schaden)
-		{
-			MyLeben -= schaden;
-			return MyLeben <= 0;
-		}
-	}
-
-	class Asteroid : Gegner
-	{
-		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 48)
-			: base(zeichenflaeche.ActualWidth + Ueberhang, zufall.NextDouble() * zeichenflaeche.ActualHeight,
-					((zufall.NextDouble() - 1.5) * 100 - 400) * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 100 * (1 + multiplier / 6),
-					groesse * 2 + 10, groesse * 2 + 10)
-		{
+			}
+			else
+			{
+				if (MyX / 1.6 < MyY - zeichenflaeche.ActualHeight && MyX / 1.6 < MyY)
+				{
+					MyX = 0;
+				}
+				else
+				{
+					if (MyY - zeichenflaeche.ActualHeight < MyY)
+					{
+						MyY = zeichenflaeche.ActualHeight;
+					}
+					else
+					{
+						MyY = 0;
+					}
+				}
+			}
 
 			for (int i = 0; i < 20; i++)
 			{
@@ -55,6 +71,25 @@ namespace Spiel
 			MyLeben = multiplier + 20;
 			MyMass = 33;
 		}
+
+		public override bool Zeichne(Canvas zeichenflaeche)
+		{
+			zeichenflaeche.Children.Add(umriss);
+			Canvas.SetLeft(umriss, MyX);
+			Canvas.SetTop(umriss, MyY);
+			return false;
+		}
+
+		public bool EnthaeltPunkt(double x, double y)
+		{
+			return umriss.RenderedGeometry.FillContains(new Point(x - MyX, y - MyY));
+		}
+
+		public bool Treffer(double schaden)
+		{
+			MyLeben -= schaden;
+			return MyLeben <= 0;
+		}
 	}
 
 	class BossAsteroid : Asteroid
@@ -62,42 +97,8 @@ namespace Spiel
 		public BossAsteroid(Canvas zeichenflaeche, int multiplier)
 			: base(zeichenflaeche, multiplier, Convert.ToInt32(zeichenflaeche.ActualHeight / 8))
 		{
-			MyLeben = multiplier * 100 + 100;
+			MyLeben = multiplier * 100 + 400;
 			MyMass = 99;
-		}
-	}
-
-	class GegnerSchiff : Gegner
-	{
-		double nachladen = 0;
-
-		public GegnerSchiff(Canvas zeichenflaeche, int multiplier) 
-			: base(zeichenflaeche.ActualWidth + Ueberhang, zufall.NextDouble() * zeichenflaeche.ActualHeight,
-					((zufall.NextDouble() - 1.5) * 100 - 400) * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 100 * (1 + multiplier / 6),
-					35, 60)
-		{
-			umriss.Points.Add(new Point(-20, 0));
-			umriss.Points.Add(new Point(15, 30));
-			umriss.Points.Add(new Point(15, -30));
-			umriss.Fill = Brushes.IndianRed;
-
-			MyRotation = new RotateTransform(-90);
-
-			MyLeben = multiplier + 10;
-			MyMass = 10;
-		}
-
-		public void Schiessen(List<Torpedo> gegnerTorpedoObjekte)
-		{
-			if (nachladen == 0)
-			{
-				gegnerTorpedoObjekte.Add(new Torpedo(this, 0, Color.FromArgb(255, 255, 0, 0), 5, 100, 800, 10));
-				nachladen = 20;
-			}
-			else
-			{
-				nachladen--;
-			}
 		}
 	}
 }

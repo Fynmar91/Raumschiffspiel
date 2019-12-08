@@ -16,12 +16,14 @@ namespace Spiel
 		Polygon umriss = new Polygon();
 		Ellipse schild = new Ellipse();
 		int schildRadius = 0;
-		
-		public double MyHP { get; set; }
+
+		RotateTransform rotation = new RotateTransform();
+		public RotateTransform Rotation { get => rotation; }
+		public int MyHP { get; set; }
 		public int MySchild { get; set; }
 
 		public Raumschiff(Canvas zeichenflaeche)
-			: base(0.5d * zeichenflaeche.ActualWidth, 0.5d * zeichenflaeche.ActualHeight, 0, 0, 20, 25)
+			: base(0.5d * zeichenflaeche.ActualWidth, 0.5d * zeichenflaeche.ActualHeight)
 		{
 			umriss.Points.Add(new Point(0d, -15d));
 			umriss.Points.Add(new Point(10d, 10d));
@@ -37,17 +39,15 @@ namespace Spiel
 
 		public override bool Zeichne(Canvas zeichenflaeche)
 		{
+			zeichenflaeche.Children.Add(umriss);
 			Canvas.SetLeft(umriss, MyX);
 			Canvas.SetTop(umriss, MyY);
-			zeichenflaeche.Children.Add(umriss);
-
-			schild.Width = schildRadius;
-			schild.Height = schildRadius;
-			Canvas.SetZIndex(schild, -1);
+			zeichenflaeche.Children.Add(schild);
 			Canvas.SetLeft(schild, MyX - schild.ActualWidth / 2);
 			Canvas.SetTop(schild, MyY - schild.ActualHeight / 2);
-			zeichenflaeche.Children.Add(schild);
-
+			Canvas.SetZIndex(schild, -1);
+			schild.Width = schildRadius;
+			schild.Height = schildRadius;
 			return false;
 		}
 
@@ -57,11 +57,11 @@ namespace Spiel
 			Point schiffPos = zeichenflaeche.PointToScreen(new Point(this.MyX, this.MyY));
 			double xDiff = mausPos.X - 210 - schiffPos.X;
 			double yDiff = mausPos.Y - 30 - schiffPos.Y;
-			MyRotation = new RotateTransform(90 + (Math.Atan2(yDiff, xDiff) * 180 / Math.PI));
-			umriss.RenderTransform = MyRotation;
+			rotation = new RotateTransform(90 + (Math.Atan2(yDiff, xDiff) * 180 / Math.PI));
+			umriss.RenderTransform = rotation;
 		}
 
-		public bool Damage(double mass)
+		public bool Damage(int mass)
 		{
 			if (mass <= 33)
 			{

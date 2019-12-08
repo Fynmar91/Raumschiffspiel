@@ -16,15 +16,16 @@ namespace Spiel
 		Ellipse umriss = new Ellipse();
 
 		public XpKugel(Canvas zeichenflaeche, SolidColorBrush brush, int groesse)
-			: base(zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
-					(zufall.NextDouble() - 1.5) * 200, 0,
-					groesse, groesse)
+			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight)
 		{
 			umriss.Width = groesse;
 			umriss.Height = groesse;
 			umriss.Fill = brush;
+		}
 
-			MyKollision = new Rect(MyX, MyY, umriss.ActualWidth, umriss.ActualHeight);
+		public bool EnthaeltPunkt(double x, double y)
+		{
+			return umriss.RenderedGeometry.FillContains(new Point(x - MyX, y - MyY));
 		}
 
 		public override bool Zeichne(Canvas zeichenflaeche)

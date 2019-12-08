@@ -67,7 +67,7 @@ namespace Spiel
 		{
 			get
 			{
-				return (schiffWaffen + 1) * 800 + 200;
+				return (schiffWaffen + 1) * 200 + 600;
 			}
 		}
 
@@ -91,7 +91,7 @@ namespace Spiel
 		{
 			get
 			{
-				return Convert.ToInt32(schiffRaketen * 800 + 800);
+				return Convert.ToInt32(schiffRaketen * 100 + 800);
 			}
 		}
 
@@ -118,9 +118,9 @@ namespace Spiel
 					{
 						durchlaeufe += 1;
 
-						if (raumschiff.MyHP < 97d)
+						if (raumschiff.MyHP < 95d)
 						{
-							raumschiff.MyHP += 3;
+							raumschiff.MyHP += 5;
 						}
 						else
 						{
@@ -231,6 +231,7 @@ namespace Spiel
 			}
 		}
 
+		[STAThread]
 		void Animate()
 		{
 			List<Torpedo> abfall_T = new List<Torpedo>();
@@ -337,13 +338,13 @@ namespace Spiel
 
 							if (asteroid is BossAsteroid)
 							{
-								score += 200;
-								xp += 200;
+								score += 400;
+								xp += 400;
 							}
 							else
 							{
-								score += 20;
-								xp += 20;
+								score += 40;
+								xp += 40;
 							}
 							break;
 						}
@@ -362,13 +363,13 @@ namespace Spiel
 
 							if (asteroid is BossAsteroid)
 							{
-								score += 200;
-								xp += 200;
+								score += 400;
+								xp += 400;
 							}
 							else
 							{
-								score += 20;
-								xp += 20;
+								score += 40;
+								xp += 40;
 							}
 							break;
 						}
@@ -383,13 +384,9 @@ namespace Spiel
 					{
 						abfall_A.Add(asteroid);
 
-						if (schiffWaffen > 1)
+						if (xp > 100)
 						{
-							schiffWaffen -= 2;
-						}
-						else if (schiffWaffen > 0)
-						{
-							schiffWaffen--;
+							xp -= 100;
 						}
 					}
 					else
@@ -405,16 +402,16 @@ namespace Spiel
 				{
 					if (item is XpKlein)
 					{
-						xp += 100;
+						xp += 200;
 					}
 					else if (item is XpMittel)
 					{
-						xp += 150;
+						xp += 300;
 						raumschiff.StarteSchilde();
 					}
 					else if (item is XpHoch)
 					{
-						xp += 200;
+						xp += 400;
 						bomben += 3;
 					}
 

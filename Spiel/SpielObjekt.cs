@@ -12,27 +12,25 @@ namespace Spiel
 {
 	abstract class SpielObjekt
 	{
-		public const int Ueberhang = 48;
-
-		public Rect MyKollision;
-		double MyBreite { get; set; }
-		double MyHoehe { get; set; }
 		public double MyX { get; set; }
 		public double MyY { get; set; }
 		public double MyXvel { get; set; }
 		public double MyYvel { get; set; }
-		public RotateTransform MyRotation { get; set; }
 
-		protected SpielObjekt(double x, double y, double vx, double vy, double breite, double hoehe)
+
+
+		protected SpielObjekt(double x, double y)
 		{
-			MyBreite = breite;
-			MyHoehe = hoehe;
+			this.MyX = x;
+			this.MyY = y;
+		}
+
+		protected SpielObjekt(double x, double y, double vx, double vy)
+		{
 			this.MyX = x;
 			this.MyY = y;
 			this.MyXvel = vx;
 			this.MyYvel = vy;
-
-			MyKollision = new Rect(MyX - MyBreite / 2, MyY - MyHoehe / 2, MyBreite, MyHoehe);
 		}
 
 		public bool Animiere(Canvas zeichenflaeche, TimeSpan intervall)
@@ -40,40 +38,33 @@ namespace Spiel
 			MyX += MyXvel * intervall.TotalSeconds;
 			MyY += MyYvel * intervall.TotalSeconds;
 
-			MyKollision = new Rect(MyX - MyBreite / 2, MyY - MyHoehe / 2, MyBreite, MyHoehe);
-
-			if (MyX < -Ueberhang)
+			if (MyX < 0)
 			{
 				MyXvel = -MyXvel;
-				MyX = -Ueberhang;
+				MyX = 0;
 				return true;
 			}
-			else if (MyX > zeichenflaeche.ActualWidth + Ueberhang)
+			else if (MyX > zeichenflaeche.ActualWidth)
 			{
 				MyXvel = -MyXvel;
-				MyX = zeichenflaeche.ActualWidth + Ueberhang;
+				MyX = zeichenflaeche.ActualWidth;
 				return true;
 			}
 
-			if (MyY < -Ueberhang)
+			if (MyY < 0)
 			{
 				MyYvel = -MyYvel;
-				MyY = -Ueberhang;
+				MyY = 0;
 				return true;
 			}
-			else if (MyY > zeichenflaeche.ActualHeight + Ueberhang)
+			else if (MyY > zeichenflaeche.ActualHeight)
 			{
 				MyYvel = -MyYvel;
-				MyY = zeichenflaeche.ActualHeight + Ueberhang;
+				MyY = zeichenflaeche.ActualHeight;
 				return true;
 			}
 
 			return false;
-		}
-
-		public bool EnthaeltPunkt(Rect ziel)
-		{
-			return MyKollision.IntersectsWith(ziel);
 		}
 
 		public abstract bool Zeichne(Canvas zeichenflaeche);
