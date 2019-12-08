@@ -231,7 +231,6 @@ namespace Spiel
 			}
 		}
 
-		[STAThread]
 		void Animate()
 		{
 			List<Torpedo> abfall_T = new List<Torpedo>();
