@@ -126,12 +126,9 @@ namespace Spiel
 					Stop();
 				}
 
-				if (schiessWarte % 10 == 0)
+				foreach (var item in gegnerObjekte)
 				{
-					foreach (var item in gegnerObjekte)
-					{
-						item.Schiessen(gegnerTorpedoObjekte);
-					}
+					item.Schiessen(gegnerTorpedoObjekte);
 				}
 			}
 		}
@@ -149,7 +146,7 @@ namespace Spiel
 				}
 			}
 
-			if (durchlaeufe / level > 5)
+			if (zufall.NextDouble() * zufall.NextDouble() * zufall.NextDouble() > 0.8)
 			{
 				asteroidObjekte.Add(new BossAsteroid(zeichenflaeche, level));
 				level++;
@@ -158,10 +155,8 @@ namespace Spiel
 
 		void PowerUpGenerator()
 		{
-			if (zeit / durchlaeufe >= 10)
+			if (zufall.NextDouble() * zufall.NextDouble() * zufall.NextDouble() > 0.75)
 			{
-				powerUpObjekte.Clear();
-
 				switch (zufall.Next(0, 8))
 				{
 					case 1:
@@ -236,20 +231,20 @@ namespace Spiel
 					if (i == 0 || (i == 1 && schiessWarte % 5 == 0) || (i == 2 && schiessWarte % 6 == 0)
 							|| (i == 3 && schiessWarte % 7 == 0) || (i == 4 && schiessWarte % 7 == 0) || (i == 5 && schiessWarte % 7 == 0) || (i == 6 && schiessWarte % 7 == 0))
 					{
-						torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4));
-						torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4));
+						torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4, 1500, 3));
+						torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4, 1500, 3));
 					}
 
 					if (schiffWaffen > 2 && i == 0)
 					{
-						torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[6], schiffSchaden, 6));
-						torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[6], schiffSchaden, 6));
+						torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[6], schiffSchaden, 6, 1500, 3));
+						torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[6], schiffSchaden, 6, 1500, 3));
 					}
 
 					if (schiffWaffen > 4 && i == 0)
 					{
-						torpedoObjekte.Add(new Torpedo(raumschiff, 120, farbe[1], schiffSchaden, 10));
-						torpedoObjekte.Add(new Torpedo(raumschiff, -120, farbe[1], schiffSchaden, 10));
+						torpedoObjekte.Add(new Torpedo(raumschiff, 120, farbe[1], schiffSchaden, 10, 1500, 3));
+						torpedoObjekte.Add(new Torpedo(raumschiff, -120, farbe[1], schiffSchaden, 10, 1500, 3));
 					}
 
 					if (schiffRaketen > 0 && schiessWarte % (20 - schiffRaketen / 2) == 0)

@@ -41,7 +41,7 @@ namespace Spiel
 		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 48)
 			: base(zeichenflaeche.ActualWidth + Ueberhang, zufall.NextDouble() * zeichenflaeche.ActualHeight,
 					((zufall.NextDouble() - 1.5) * 100 - 400) * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 100 * (1 + multiplier / 6),
-					groesse + 20, groesse + 20)
+					groesse * 2 + 10, groesse * 2 + 10)
 		{
 
 			for (int i = 0; i < 20; i++)
@@ -52,7 +52,7 @@ namespace Spiel
 			}
 			umriss.Fill = Brushes.Gray;
 
-			MyLeben = multiplier + 10;
+			MyLeben = multiplier + 20;
 			MyMass = 33;
 		}
 	}
@@ -62,30 +62,42 @@ namespace Spiel
 		public BossAsteroid(Canvas zeichenflaeche, int multiplier)
 			: base(zeichenflaeche, multiplier, Convert.ToInt32(zeichenflaeche.ActualHeight / 8))
 		{
-			MyLeben = multiplier * 100 + 400;
+			MyLeben = multiplier * 100 + 100;
 			MyMass = 99;
 		}
 	}
 
 	class GegnerSchiff : Gegner
 	{
+		double nachladen = 0;
+
 		public GegnerSchiff(Canvas zeichenflaeche, int multiplier) 
 			: base(zeichenflaeche.ActualWidth + Ueberhang, zufall.NextDouble() * zeichenflaeche.ActualHeight,
 					((zufall.NextDouble() - 1.5) * 100 - 400) * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 100 * (1 + multiplier / 6),
-					35, 30)
+					35, 60)
 		{
 			umriss.Points.Add(new Point(-20, 0));
-			umriss.Points.Add(new Point(15, 15));
-			umriss.Points.Add(new Point(15, -15));
+			umriss.Points.Add(new Point(15, 30));
+			umriss.Points.Add(new Point(15, -30));
 			umriss.Fill = Brushes.IndianRed;
 
 			MyRotation = new RotateTransform(-90);
+
+			MyLeben = multiplier + 10;
 			MyMass = 10;
 		}
 
 		public void Schiessen(List<Torpedo> gegnerTorpedoObjekte)
 		{
-			gegnerTorpedoObjekte.Add(new Torpedo(this, 0, Color.FromArgb(255, 255, 0, 0), 5, 24));
+			if (nachladen == 0)
+			{
+				gegnerTorpedoObjekte.Add(new Torpedo(this, 0, Color.FromArgb(255, 255, 0, 0), 5, 100, 800, 10));
+				nachladen = 20;
+			}
+			else
+			{
+				nachladen--;
+			}
 		}
 	}
 }

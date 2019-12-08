@@ -14,18 +14,23 @@ namespace Spiel
 	{
 		Ellipse umriss = new Ellipse();
 		public double MySchaden { get; set; }
-		int leben;
+		double MyGeschwindigkeit { get; set; }
+		int MyGroesse { get; set; }
+		int MyLeben { get; set; }
 
-		public Torpedo(SpielObjekt start, int abweichung, Color fabe, double schaden, int leben)
+		public Torpedo(SpielObjekt start, int abweichung, Color fabe, double schaden, int leben, double geschwindigkeit, int groesse)
 			: base(start.MyX, start.MyY,
-					Math.Cos((-90 + abweichung + start.MyRotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + abweichung + start.MyRotation.Angle) * Math.PI / 180) * 1500,
+					Math.Cos((-90 + abweichung + start.MyRotation.Angle) * Math.PI / 180) * geschwindigkeit, Math.Sin((-90 + abweichung + start.MyRotation.Angle) * Math.PI / 180) * geschwindigkeit,
 					3, 10)
 		{
-			umriss.Width = 3;
+			MySchaden = schaden;
+			MyGeschwindigkeit = geschwindigkeit;
+			MyGroesse = groesse;
+
+			umriss.Width = MyGroesse;
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
-			MySchaden = schaden;
-			this.leben = leben;
+			MyLeben = leben;
 
 			MyKollision = new Rect(MyX, MyY, umriss.ActualWidth, umriss.ActualHeight);
 		}
@@ -39,7 +44,7 @@ namespace Spiel
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
 			MySchaden = schaden * 80;
-			this.leben = leben;
+			MyLeben = leben;
 		}
 
 		public override bool Zeichne(Canvas zeichenflaeche)
@@ -48,7 +53,7 @@ namespace Spiel
 			zeichenflaeche.Children.Add(umriss);
 			Canvas.SetLeft(umriss, MyX);
 			Canvas.SetTop(umriss, MyY);
-			return --leben < 0;
+			return --MyLeben < 0;
 		}
 	}
 }

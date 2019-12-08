@@ -32,7 +32,7 @@ namespace Spiel
 			this.MyXvel = vx;
 			this.MyYvel = vy;
 
-			MyKollision = new Rect(MyX, MyY, MyBreite, MyHoehe);
+			MyKollision = new Rect(MyX - MyBreite / 2, MyY - MyHoehe / 2, MyBreite, MyHoehe);
 		}
 
 		public bool Animiere(Canvas zeichenflaeche, TimeSpan intervall)
@@ -40,7 +40,7 @@ namespace Spiel
 			MyX += MyXvel * intervall.TotalSeconds;
 			MyY += MyYvel * intervall.TotalSeconds;
 
-			MyKollision = new Rect(MyX, MyY, MyBreite, MyHoehe);
+			MyKollision = new Rect(MyX - MyBreite / 2, MyY - MyHoehe / 2, MyBreite, MyHoehe);
 
 			if (MyX < -Ueberhang)
 			{
