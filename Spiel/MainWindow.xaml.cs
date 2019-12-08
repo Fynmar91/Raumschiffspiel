@@ -186,6 +186,7 @@ namespace Spiel
 			}
 		}
 
+
 		void HpRegen()
 		{
 			if (zeit / durchlaeufe >= 10d)
