@@ -32,9 +32,7 @@ namespace Spiel
 		}
 
 		List<Asteroid> asteroidObjekte = new List<Asteroid>();
-		List<GegnerSchiff> gegnerObjekte = new List<GegnerSchiff>();
 		List<Torpedo> torpedoObjekte = new List<Torpedo>();
-		List<Torpedo> gegnerTorpedoObjekte = new List<Torpedo>();
 		List<XpKugel> powerUpObjekte = new List<XpKugel>();
 		List<Rakete> raketeObjekte = new List<Rakete>();
 
@@ -69,7 +67,7 @@ namespace Spiel
 		{
 			get
 			{
-				return (schiffWaffen + 1) * 200 + 600;
+				return (schiffWaffen + 1) * 800 + 200;
 			}
 		}
 
@@ -93,7 +91,7 @@ namespace Spiel
 		{
 			get
 			{
-				return Convert.ToInt32(schiffRaketen * 100 + 800);
+				return Convert.ToInt32(schiffRaketen * 800 + 800);
 			}
 		}
 
@@ -106,186 +104,191 @@ namespace Spiel
 
 				if (raumschiff.MyHP > 0)
 				{
-					if (zeit / durchlaeufe >= 10)
+					if (spawnZeit <= 0)
 					{
-						durchlaeufe += 1;
+						spawnZeit = 10;
+
+						if (asteroidObjekte.Count() < 16)
+						{
+							asteroidObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
+						}
 					}
 
-					AsteridGenerator();
-					PowerUpGenerator();
-					HpRegen();
-					AutoUpgrade();
-					Schiessen();
-					Animieren();
-					PruefeKollisionen();
-					Zeichnen();
+					if (zeit / durchlaeufe >= 10d)
+					{
+						durchlaeufe += 1;
+
+						if (raumschiff.MyHP < 97d)
+						{
+							raumschiff.MyHP += 3;
+						}
+						else
+						{
+							raumschiff.MyHP = 100;
+						}
+
+						powerUpObjekte.Clear();
+
+						switch (zufall.Next(0, 8))
+						{
+							case 1:
+								powerUpObjekte.Add(new XpKlein(zeichenflaeche));
+								break;
+							case 2:
+								powerUpObjekte.Add(new XpKlein(zeichenflaeche));
+								break;
+							case 3:
+								powerUpObjekte.Add(new XpKlein(zeichenflaeche));
+								break;
+							case 4:
+								powerUpObjekte.Add(new XpKlein(zeichenflaeche));
+								break;
+							case 5:
+								powerUpObjekte.Add(new XpMittel(zeichenflaeche));
+								break;
+							case 6:
+								powerUpObjekte.Add(new XpMittel(zeichenflaeche));
+								break;
+							case 7:
+								powerUpObjekte.Add(new XpHoch(zeichenflaeche));
+								break;
+							default:
+								break;
+						}
+
+						if (durchlaeufe / level > 5)
+						{
+							asteroidObjekte.Add(new BossAsteroid(zeichenflaeche, level));
+							level++;
+						}
+
+					}
+
+					if (xp >= MyWaffenPreis && schiffWaffen < maxUpgrades && checkBox_autoUpgrade.IsChecked == true)
+					{
+						xp -= MyWaffenPreis;
+						schiffWaffen++;
+						UpdateText();
+					}
+
+					if (schiessen)
+					{
+						List<Color> farbe = new List<Color>();
+						farbe.Add(Color.FromArgb(255, 0, 255, 255));
+						farbe.Add(Color.FromArgb(255, 0, 140, 255));
+						farbe.Add(Color.FromArgb(255, 0, 105, 180));
+						farbe.Add(Color.FromArgb(255, 128, 105, 180));
+						farbe.Add(Color.FromArgb(255, 180, 105, 180));
+						farbe.Add(Color.FromArgb(255, 255, 105, 180));
+						farbe.Add(Color.FromArgb(255, 255, 140, 220));
+
+						schiessWarte++;
+
+						for (int i = 0; i < schiffWaffen + 1; i++)
+						{
+							if (i == 0 || (i == 1 && schiessWarte % 5 == 0) || (i == 2 && schiessWarte % 6 == 0) 
+									|| (i == 3 && schiessWarte % 7 == 0) || (i == 4 && schiessWarte % 7 == 0) || (i == 5 && schiessWarte % 7 == 0) || (i == 6 && schiessWarte % 7 == 0))
+							{
+								torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4));
+								torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4));
+							}
+
+							if (schiffWaffen > 2 && i == 0)
+							{
+								torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[6], schiffSchaden, 6));
+								torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[6], schiffSchaden, 6));
+							}
+
+							if (schiffWaffen > 4 && i == 0)
+							{
+								torpedoObjekte.Add(new Torpedo(raumschiff, 120, farbe[1], schiffSchaden, 10));
+								torpedoObjekte.Add(new Torpedo(raumschiff, -120 , farbe[1], schiffSchaden, 10));
+							}
+
+							if (schiffRaketen > 0 && schiessWarte % (20 - schiffRaketen / 2) == 0)
+							{
+								raketeObjekte.Add(new Rakete(raumschiff, farbe[i], schiffSchaden));
+							}
+						}
+					}
+
 					UpdateText();
+					Animate();
 				}
 				else if (raumschiff.MyHP <= 0)
 				{
-					Stop();
-				}
-
-				foreach (var item in gegnerObjekte)
-				{
-					item.Schiessen(gegnerTorpedoObjekte);
+					zeichenflaeche.Children.Clear();
+					asteroidObjekte.Clear();
+					torpedoObjekte.Clear();
+					powerUpObjekte.Clear();
+					raketeObjekte.Clear();
+					raumschiff = null;
+					border.Background = Brushes.Red;
+					button_start.IsEnabled = true;
+					spielLaeuft = false;
+					timer.Stop();
 				}
 			}
 		}
 
-		void AsteridGenerator()
+		void Animate()
 		{
-			if (spawnZeit <= 0)
-			{
-				spawnZeit = 20;
+			List<Torpedo> abfall_T = new List<Torpedo>();
 
-				if (asteroidObjekte.Count() < 16)
+			Bewegen();
+			GeschosseBewegen();
+
+			PruefeKollisionen();
+
+			zeichenflaeche.Children.Clear();
+
+			raumschiff.Rotieren(zeichenflaeche, zeichenflaeche.PointToScreen(Mouse.GetPosition(this)));
+			raumschiff.Zeichne(zeichenflaeche);
+
+			foreach (var item in torpedoObjekte)
+			{
+				if (item.Zeichne(zeichenflaeche))
 				{
-					asteroidObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
-					gegnerObjekte.Add(new GegnerSchiff(zeichenflaeche, durchlaeufe));
+					abfall_T.Add(item);
 				}
 			}
 
-			if (zufall.NextDouble() * zufall.NextDouble() * zufall.NextDouble() > 0.8)
+			foreach (var item in asteroidObjekte)
 			{
-				asteroidObjekte.Add(new BossAsteroid(zeichenflaeche, level));
-				level++;
+				item.Zeichne(zeichenflaeche);
+			}
+
+			foreach (var item in powerUpObjekte)
+			{
+				item.Zeichne(zeichenflaeche);
+			}
+
+			foreach (var item in raketeObjekte)
+			{
+				item.Zeichne(zeichenflaeche);
+			}
+
+			foreach (var item in abfall_T)
+			{
+				torpedoObjekte.Remove(item);
 			}
 		}
 
-		void PowerUpGenerator()
-		{
-			if (zufall.NextDouble() * zufall.NextDouble() * zufall.NextDouble() > 0.75)
-			{
-				switch (zufall.Next(0, 8))
-				{
-					case 1:
-						powerUpObjekte.Add(new XpKlein(zeichenflaeche));
-						break;
-					case 2:
-						powerUpObjekte.Add(new XpKlein(zeichenflaeche));
-						break;
-					case 3:
-						powerUpObjekte.Add(new XpKlein(zeichenflaeche));
-						break;
-					case 4:
-						powerUpObjekte.Add(new XpKlein(zeichenflaeche));
-						break;
-					case 5:
-						powerUpObjekte.Add(new XpMittel(zeichenflaeche));
-						break;
-					case 6:
-						powerUpObjekte.Add(new XpMittel(zeichenflaeche));
-						break;
-					case 7:
-						powerUpObjekte.Add(new XpHoch(zeichenflaeche));
-						break;
-					default:
-						break;
-				}
-			}
-		}
-
-		void HpRegen()
-		{
-			if (zeit / durchlaeufe >= 10d)
-			{
-				if (raumschiff.MyHP < 95d)
-				{
-					raumschiff.MyHP += 5;
-				}
-				else
-				{
-					raumschiff.MyHP = 100;
-				}
-			}
-		}
-
-		void AutoUpgrade()
-		{
-			if (xp >= MyWaffenPreis && schiffWaffen < maxUpgrades && checkBox_autoUpgrade.IsChecked == true)
-			{
-				xp -= MyWaffenPreis;
-				schiffWaffen++;
-				UpdateText();
-			}
-		}
-
-		void Schiessen()
-		{
-			schiessWarte++;
-
-			if (schiessen)
-			{
-				List<Color> farbe = new List<Color>();
-				farbe.Add(Color.FromArgb(255, 0, 255, 255));
-				farbe.Add(Color.FromArgb(255, 0, 140, 255));
-				farbe.Add(Color.FromArgb(255, 0, 105, 180));
-				farbe.Add(Color.FromArgb(255, 128, 105, 180));
-				farbe.Add(Color.FromArgb(255, 180, 105, 180));
-				farbe.Add(Color.FromArgb(255, 255, 105, 180));
-				farbe.Add(Color.FromArgb(255, 255, 140, 220));
-
-				for (int i = 0; i < schiffWaffen + 1; i++)
-				{
-					if (i == 0 || (i == 1 && schiessWarte % 5 == 0) || (i == 2 && schiessWarte % 6 == 0)
-							|| (i == 3 && schiessWarte % 7 == 0) || (i == 4 && schiessWarte % 7 == 0) || (i == 5 && schiessWarte % 7 == 0) || (i == 6 && schiessWarte % 7 == 0))
-					{
-						torpedoObjekte.Add(new Torpedo(raumschiff, (5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4, 1500, 3));
-						torpedoObjekte.Add(new Torpedo(raumschiff, -(5 * i + 2), farbe[i], schiffSchaden, 24 - i * 4, 1500, 3));
-					}
-
-					if (schiffWaffen > 2 && i == 0)
-					{
-						torpedoObjekte.Add(new Torpedo(raumschiff, 180 - 2, farbe[6], schiffSchaden, 6, 1500, 3));
-						torpedoObjekte.Add(new Torpedo(raumschiff, 180 + 2, farbe[6], schiffSchaden, 6, 1500, 3));
-					}
-
-					if (schiffWaffen > 4 && i == 0)
-					{
-						torpedoObjekte.Add(new Torpedo(raumschiff, 120, farbe[1], schiffSchaden, 10, 1500, 3));
-						torpedoObjekte.Add(new Torpedo(raumschiff, -120, farbe[1], schiffSchaden, 10, 1500, 3));
-					}
-
-					if (schiffRaketen > 0 && schiessWarte % (20 - schiffRaketen / 2) == 0)
-					{
-						raketeObjekte.Add(new Rakete(raumschiff, farbe[i], schiffSchaden));
-					}
-				}
-			}
-		}
-
-		void Animieren()
+		void Bewegen()
 		{
 			raumschiff.Animiere(zeichenflaeche, timer.Interval);
 
-			List<Asteroid> abfall_A = new List<Asteroid>();
 			foreach (var item in asteroidObjekte)
 			{
-				if (item.Animiere(zeichenflaeche, timer.Interval))
-				{
-					abfall_A.Add(item);
-				}
+				item.Animiere(zeichenflaeche, timer.Interval);
 			}
-			foreach (var item in abfall_A)
-			{
-				asteroidObjekte.Remove(item);
-			}
+		}
 
-			List<GegnerSchiff> abfall_G = new List<GegnerSchiff>();
-			foreach (var item in gegnerObjekte)
-			{
-				if (item.Animiere(zeichenflaeche, timer.Interval))
-				{
-					abfall_G.Add(item);
-				}
-			}
-			foreach (var item in abfall_G)
-			{
-				gegnerObjekte.Remove(item);
-			}
-
+		void GeschosseBewegen()
+		{
 			List<Torpedo> abfall_T = new List<Torpedo>();
+			List<Rakete> abfall_R = new List<Rakete>();
+
 			foreach (var item in torpedoObjekte)
 			{
 				if (item.Animiere(zeichenflaeche, timer.Interval) && umlenkung == false)
@@ -293,25 +296,7 @@ namespace Spiel
 					abfall_T.Add(item);
 				}
 			}
-			foreach (var item in abfall_T)
-			{
-				torpedoObjekte.Remove(item);
-			}
 
-			abfall_T = new List<Torpedo>();
-			foreach (var item in gegnerTorpedoObjekte)
-			{
-				if (item.Animiere(zeichenflaeche, timer.Interval))
-				{
-					abfall_T.Add(item);
-				}
-			}
-			foreach (var item in abfall_T)
-			{
-				gegnerTorpedoObjekte.Remove(item);
-			}
-
-			List<Rakete> abfall_R = new List<Rakete>();
 			foreach (var item in raketeObjekte)
 			{
 				item.Ziel(FindeZiel(item.MyX, item.MyY));
@@ -321,31 +306,22 @@ namespace Spiel
 					abfall_R.Add(item);
 				}
 			}
+
+			foreach (var item in abfall_T)
+			{
+				torpedoObjekte.Remove(item);
+			}
+
 			foreach (var item in abfall_R)
 			{
 				raketeObjekte.Remove(item);
-			}
-
-			List<XpKugel> abfall_P = new List<XpKugel>();
-			foreach (var item in powerUpObjekte)
-			{
-				if (item.Animiere(zeichenflaeche, timer.Interval))
-				{
-					abfall_P.Add(item);
-				}
-			}
-			foreach (var item in abfall_P)
-			{
-				powerUpObjekte.Remove(item);
 			}
 		}
 
 		void PruefeKollisionen()
 		{
 			List<Asteroid> abfall_A = new List<Asteroid>();
-			List<GegnerSchiff> abfall_G = new List<GegnerSchiff>();
 			List<Torpedo> abfall_T = new List<Torpedo>();
-			List<Torpedo> abfall_GT = new List<Torpedo>();
 			List<XpKugel> abfall_P = new List<XpKugel>();
 			List<Rakete> abfall_R = new List<Rakete>();
 
@@ -353,7 +329,7 @@ namespace Spiel
 			{
 				foreach (var torpedo in torpedoObjekte)
 				{
-					if (asteroid.EnthaeltPunkt(torpedo.MyKollision))
+					if (asteroid.EnthaeltPunkt(torpedo.MyX, torpedo.MyY))
 					{
 						if (asteroid.Treffer(torpedo.MySchaden))
 						{
@@ -361,13 +337,13 @@ namespace Spiel
 
 							if (asteroid is BossAsteroid)
 							{
-								score += 400;
-								xp += 400;
+								score += 200;
+								xp += 200;
 							}
 							else
 							{
-								score += 40;
-								xp += 40;
+								score += 20;
+								xp += 20;
 							}
 							break;
 						}
@@ -378,7 +354,7 @@ namespace Spiel
 
 				foreach (var rakete in raketeObjekte)
 				{
-					if (asteroid.EnthaeltPunkt(rakete.MyKollision))
+					if (asteroid.EnthaeltPunkt(rakete.MyX, rakete.MyY))
 					{
 						if (asteroid.Treffer(rakete.MySchaden))
 						{
@@ -386,13 +362,13 @@ namespace Spiel
 
 							if (asteroid is BossAsteroid)
 							{
-								score += 400;
-								xp += 400;
+								score += 200;
+								xp += 200;
 							}
 							else
 							{
-								score += 40;
-								xp += 40;
+								score += 20;
+								xp += 20;
 							}
 							break;
 						}
@@ -401,84 +377,44 @@ namespace Spiel
 					}
 				}
 
-				if (asteroid.EnthaeltPunkt(raumschiff.MyKollision))
+				if (asteroid.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
 				{
-					raumschiff.Damage(asteroid.MyMass);
-					abfall_A.Add(asteroid);
-				}
-			}
-
-			foreach (var gegner in gegnerObjekte)
-			{
-				foreach (var torpedo in torpedoObjekte)
-				{
-					if (gegner.EnthaeltPunkt(torpedo.MyKollision))
+					if (raumschiff.Damage(asteroid.MyMass))
 					{
-						if (gegner.Treffer(torpedo.MySchaden))
+						abfall_A.Add(asteroid);
+
+						if (schiffWaffen > 1)
 						{
-							abfall_G.Add(gegner);
-
-							score += 40;
-							xp += 40;
-
-							break;
+							schiffWaffen -= 2;
 						}
-
-						abfall_T.Add(torpedo);
+						else if (schiffWaffen > 0)
+						{
+							schiffWaffen--;
+						}
 					}
-				}
-
-				foreach (var rakete in raketeObjekte)
-				{
-					if (gegner.EnthaeltPunkt(rakete.MyKollision))
+					else
 					{
-						if (gegner.Treffer(rakete.MySchaden))
-						{
-							abfall_G.Add(gegner);
-
-
-							score += 40;
-							xp += 40;
-
-							break;
-						}
-
-						abfall_R.Add(rakete);
+						abfall_A.Add(asteroid);
 					}
-				}
-
-				if (gegner.EnthaeltPunkt(raumschiff.MyKollision))
-				{
-					raumschiff.Damage(gegner.MyMass);
-					abfall_G.Add(gegner);
-				}
-			}
-
-			foreach (var item in gegnerTorpedoObjekte)
-			{
-				if (item.EnthaeltPunkt(raumschiff.MyKollision))
-				{
-					raumschiff.Damage(item.MySchaden);
-					abfall_GT.Add(item);
 				}
 			}
 
 			foreach (var item in powerUpObjekte)
 			{
-				if (item.EnthaeltPunkt(raumschiff.MyKollision))
+				if (item.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
 				{
 					if (item is XpKlein)
 					{
-						xp += 200;
+						xp += 100;
 					}
 					else if (item is XpMittel)
 					{
-						xp += 300;
+						xp += 150;
 						raumschiff.StarteSchilde();
 					}
 					else if (item is XpHoch)
 					{
-						xp += 400;
+						xp += 200;
 						bomben += 3;
 					}
 
@@ -490,17 +426,9 @@ namespace Spiel
 			{
 				asteroidObjekte.Remove(item);
 			}
-			foreach (var item in abfall_G)
-			{
-				gegnerObjekte.Remove(item);
-			}
 			foreach (var item in abfall_T)
 			{
 				torpedoObjekte.Remove(item);
-			}
-			foreach (var item in abfall_GT)
-			{
-				gegnerTorpedoObjekte.Remove(item);
 			}
 			foreach (var item in abfall_P)
 			{
@@ -509,60 +437,6 @@ namespace Spiel
 			foreach (var item in abfall_R)
 			{
 				raketeObjekte.Remove(item);
-			}
-		}
-
-		void Zeichnen()
-		{
-			zeichenflaeche.Children.Clear();
-
-			raumschiff.Rotieren(zeichenflaeche, zeichenflaeche.PointToScreen(Mouse.GetPosition(this)));
-			raumschiff.Zeichne(zeichenflaeche);
-
-			foreach (var item in asteroidObjekte)
-			{
-				item.Zeichne(zeichenflaeche);
-			}
-
-			foreach (var item in gegnerObjekte)
-			{
-				item.Zeichne(zeichenflaeche);
-			}
-
-			foreach (var item in powerUpObjekte)
-			{
-				item.Zeichne(zeichenflaeche);
-			}
-
-			foreach (var item in raketeObjekte)
-			{
-				item.Zeichne(zeichenflaeche);
-			}
-
-			List<Torpedo> abfall_T = new List<Torpedo>();
-			foreach (var item in torpedoObjekte)
-			{
-				if (item.Zeichne(zeichenflaeche))
-				{
-					abfall_T.Add(item);
-				}
-			}
-			foreach (var item in abfall_T)
-			{
-				torpedoObjekte.Remove(item);
-			}
-
-			abfall_T = new List<Torpedo>();
-			foreach (var item in gegnerTorpedoObjekte)
-			{
-				if (item.Zeichne(zeichenflaeche))
-				{
-					abfall_T.Add(item);
-				}
-			}
-			foreach (var item in abfall_T)
-			{
-				gegnerTorpedoObjekte.Remove(item);
 			}
 		}
 
@@ -599,27 +473,13 @@ namespace Spiel
 			timer.Stop();
 		}
 
-		void Weiter()
+		public void Weiter()
 		{
 			spielPausiert = false;
 			timer.Start();
 		}
 
-		void Stop()
-		{
-			zeichenflaeche.Children.Clear();
-			asteroidObjekte.Clear();
-			torpedoObjekte.Clear();
-			powerUpObjekte.Clear();
-			raketeObjekte.Clear();
-			raumschiff = null;
-			border.Background = Brushes.Red;
-			button_start.IsEnabled = true;
-			spielLaeuft = false;
-			timer.Stop();
-		}
-
-		void Bombe(Point p)
+		private void Bombe(Point p)
 		{
 			for (int i = 0; i < 360; i += 10)
 			{
@@ -627,7 +487,7 @@ namespace Spiel
 			}
 		}
 
-		Vector FindeZiel(double x, double y)
+		private Vector FindeZiel(double x, double y)
 		{
 			double naechstes;
 			Point punktNaechstes = new Point(x, y);
@@ -675,7 +535,7 @@ namespace Spiel
 
 			xp = 0;
 			schiffWaffen = 0;
-			schiffGeschwindikeit = 600;
+			schiffGeschwindikeit = 400;
 			schiffSchaden = 1;
 			schiffRaketen = 0;
 			umlenkung = false;
@@ -685,6 +545,11 @@ namespace Spiel
 			border.Background = Brushes.Black;
 			raumschiff = new Raumschiff(zeichenflaeche);
 			timer.Start();
+
+			for (int i = 0; i < 4; i++)
+			{
+				asteroidObjekte.Add(new Asteroid(zeichenflaeche, durchlaeufe));
+			}
 		}
 
 		private void Window_KeyDown(object sender, KeyEventArgs e)
