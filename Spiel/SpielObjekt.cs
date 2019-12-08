@@ -12,25 +12,27 @@ namespace Spiel
 {
 	abstract class SpielObjekt
 	{
+		public const int Ueberhang = 48;
+
+		public Rect MyKollision;
+		double MyBreite { get; set; }
+		double MyHoehe { get; set; }
 		public double MyX { get; set; }
 		public double MyY { get; set; }
 		public double MyXvel { get; set; }
 		public double MyYvel { get; set; }
+		public RotateTransform MyRotation { get; set; }
 
-
-
-		protected SpielObjekt(double x, double y)
+		protected SpielObjekt(double x, double y, double vx, double vy, double breite, double hoehe)
 		{
-			this.MyX = x;
-			this.MyY = y;
-		}
-
-		protected SpielObjekt(double x, double y, double vx, double vy)
-		{
+			MyBreite = breite;
+			MyHoehe = hoehe;
 			this.MyX = x;
 			this.MyY = y;
 			this.MyXvel = vx;
 			this.MyYvel = vy;
+
+			MyKollision = new Rect(MyX, MyY, MyBreite, MyHoehe);
 		}
 
 		public bool Animiere(Canvas zeichenflaeche, TimeSpan intervall)
@@ -38,33 +40,40 @@ namespace Spiel
 			MyX += MyXvel * intervall.TotalSeconds;
 			MyY += MyYvel * intervall.TotalSeconds;
 
-			if (MyX < 0)
+			MyKollision = new Rect(MyX, MyY, MyBreite, MyHoehe);
+
+			if (MyX < -Ueberhang)
 			{
 				MyXvel = -MyXvel;
-				MyX = 0;
+				MyX = -Ueberhang;
 				return true;
 			}
-			else if (MyX > zeichenflaeche.ActualWidth)
+			else if (MyX > zeichenflaeche.ActualWidth + Ueberhang)
 			{
 				MyXvel = -MyXvel;
-				MyX = zeichenflaeche.ActualWidth;
+				MyX = zeichenflaeche.ActualWidth + Ueberhang;
 				return true;
 			}
 
-			if (MyY < 0)
+			if (MyY < -Ueberhang)
 			{
 				MyYvel = -MyYvel;
-				MyY = 0;
+				MyY = -Ueberhang;
 				return true;
 			}
-			else if (MyY > zeichenflaeche.ActualHeight)
+			else if (MyY > zeichenflaeche.ActualHeight + Ueberhang)
 			{
 				MyYvel = -MyYvel;
-				MyY = zeichenflaeche.ActualHeight;
+				MyY = zeichenflaeche.ActualHeight + Ueberhang;
 				return true;
 			}
 
 			return false;
+		}
+
+		public bool EnthaeltPunkt(Rect ziel)
+		{
+			return MyKollision.IntersectsWith(ziel);
 		}
 
 		public abstract bool Zeichne(Canvas zeichenflaeche);

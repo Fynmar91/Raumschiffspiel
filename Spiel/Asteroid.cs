@@ -10,55 +10,39 @@ using System.Windows.Shapes;
 
 namespace Spiel
 {
-	class Asteroid : SpielObjekt
+	abstract class Gegner : SpielObjekt
 	{
-		static Random zufall = new Random();
-		Polygon umriss = new Polygon();
+		protected static Random zufall = new Random();
+		protected Polygon umriss = new Polygon();
 		public double MyLeben { get; set; }
 		public int MyMass { get; set; }
 
-		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 24)
-			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
-					(zufall.NextDouble() - 0.5) * 800 * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 800 * (1 + multiplier / 6))
+		protected Gegner(double x, double y, double vx, double vy, double breite, double hoehe) : base(x, y, vx, vy, breite, hoehe)
 		{
-			if (MyX - zeichenflaeche.ActualWidth < MyX)
-			{
-				if ((MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY - zeichenflaeche.ActualHeight
-						&& (MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY)
-				{
-					MyX = zeichenflaeche.ActualWidth;
-				}
-				else
-				{
-					if (MyY - zeichenflaeche.ActualHeight < MyY)
-					{
-						MyY = zeichenflaeche.ActualHeight;
-					}
-					else
-					{
-						MyY = 0;
-					}
-				}
+			MyKollision = new Rect(MyX, MyY, umriss.ActualWidth, umriss.ActualHeight);
+		}
+		public override bool Zeichne(Canvas zeichenflaeche)
+		{
+			zeichenflaeche.Children.Add(umriss);
+			Canvas.SetLeft(umriss, MyX);
+			Canvas.SetTop(umriss, MyY);
+			return false;
+		}
 
-			}
-			else
-			{
-				if (MyX / 1.6 < MyY - zeichenflaeche.ActualHeight && MyX / 1.6 < MyY)
-				{
-					MyX = 0;
-				}
-				else
-				{
-					if (MyY - zeichenflaeche.ActualHeight < MyY)
-					{
-						MyY = zeichenflaeche.ActualHeight;
-					}
-					else
-					{
-						MyY = 0;
-					}
-				}
-			}
+		public bool Treffer(double schaden)
+		{
+			MyLeben -= schaden;
+			return MyLeben <= 0;
+		}
+	}
+
+	class Asteroid : Gegner
+	{
+		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 48)
+			: base(zeichenflaeche.ActualWidth + Ueberhang, zufall.NextDouble() * zeichenflaeche.ActualHeight,
+					((zufall.NextDouble() - 1.5) * 100 - 400) * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 100 * (1 + multiplier / 6),
+					groesse + 20, groesse + 20)
+		{
 
 			for (int i = 0; i < 20; i++)
 			{
@@ -68,27 +52,8 @@ namespace Spiel
 			}
 			umriss.Fill = Brushes.Gray;
 
-			MyLeben = multiplier + 20;
+			MyLeben = multiplier + 10;
 			MyMass = 33;
-		}
-
-		public override bool Zeichne(Canvas zeichenflaeche)
-		{
-			zeichenflaeche.Children.Add(umriss);
-			Canvas.SetLeft(umriss, MyX);
-			Canvas.SetTop(umriss, MyY);
-			return false;
-		}
-
-		public bool EnthaeltPunkt(double x, double y)
-		{
-			return umriss.RenderedGeometry.FillContains(new Point(x - MyX, y - MyY));
-		}
-
-		public bool Treffer(double schaden)
-		{
-			MyLeben -= schaden;
-			return MyLeben <= 0;
 		}
 	}
 
@@ -99,6 +64,28 @@ namespace Spiel
 		{
 			MyLeben = multiplier * 100 + 400;
 			MyMass = 99;
+		}
+	}
+
+	class GegnerSchiff : Gegner
+	{
+		public GegnerSchiff(Canvas zeichenflaeche, int multiplier) 
+			: base(zeichenflaeche.ActualWidth + Ueberhang, zufall.NextDouble() * zeichenflaeche.ActualHeight,
+					((zufall.NextDouble() - 1.5) * 100 - 400) * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 100 * (1 + multiplier / 6),
+					35, 30)
+		{
+			umriss.Points.Add(new Point(-20, 0));
+			umriss.Points.Add(new Point(15, 15));
+			umriss.Points.Add(new Point(15, -15));
+			umriss.Fill = Brushes.IndianRed;
+
+			MyRotation = new RotateTransform(-90);
+			MyMass = 10;
+		}
+
+		public void Schiessen(List<Torpedo> gegnerTorpedoObjekte)
+		{
+			gegnerTorpedoObjekte.Add(new Torpedo(this, 0, Color.FromArgb(255, 255, 0, 0), 5, 24));
 		}
 	}
 }

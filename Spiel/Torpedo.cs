@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -15,20 +16,24 @@ namespace Spiel
 		public double MySchaden { get; set; }
 		int leben;
 
-		public Torpedo(Raumschiff raumschiff, int abweichung, Color fabe, double schaden, int leben)
-			: base(raumschiff.MyX, raumschiff.MyY,
-					Math.Cos((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + abweichung + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500)
+		public Torpedo(SpielObjekt start, int abweichung, Color fabe, double schaden, int leben)
+			: base(start.MyX, start.MyY,
+					Math.Cos((-90 + abweichung + start.MyRotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + abweichung + start.MyRotation.Angle) * Math.PI / 180) * 1500,
+					3, 10)
 		{
 			umriss.Width = 3;
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
 			MySchaden = schaden;
 			this.leben = leben;
+
+			MyKollision = new Rect(MyX, MyY, umriss.ActualWidth, umriss.ActualHeight);
 		}
 
 		public Torpedo(double x, double y, int abweichung, Color fabe, double schaden, int leben)
 			: base(x, y, Math.Cos((-90 + abweichung) * Math.PI / 180) * 1500
-				, Math.Sin((-90 + abweichung) * Math.PI / 180) * 1500)
+				, Math.Sin((-90 + abweichung) * Math.PI / 180) * 1500,
+				  3, 10)
 		{
 			umriss.Width = 3;
 			umriss.Height = 10;

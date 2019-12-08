@@ -15,14 +15,17 @@ namespace Spiel
 		Ellipse umriss = new Ellipse();
 		public double MySchaden { get; set; }
 
-		public Rakete(Raumschiff raumschiff, Color fabe, double schaden)
-			: base(raumschiff.MyX, raumschiff.MyY,
-				  Math.Cos((-90 + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + raumschiff.Rotation.Angle) * Math.PI / 180) * 1500)
+		public Rakete(SpielObjekt start, Color fabe, double schaden)
+			: base(start.MyX, start.MyY,
+				  Math.Cos((-90 + start.MyRotation.Angle) * Math.PI / 180) * 1500, Math.Sin((-90 + start.MyRotation.Angle) * Math.PI / 180) * 1500,
+				  5, 20)
 		{
 			umriss.Width = 5;
 			umriss.Height = 20;
 			umriss.Fill = new SolidColorBrush(fabe);
 			MySchaden = schaden * 2;
+
+			MyKollision = new Rect(MyX, MyY, umriss.ActualWidth, umriss.ActualHeight);
 		}
 
 		public void Ziel(Vector vector)
