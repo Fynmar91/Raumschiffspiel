@@ -80,8 +80,7 @@ namespace Spiel
 			umriss.Points.Add(new Point(15, 30));
 			umriss.Points.Add(new Point(15, -30));
 			umriss.Fill = Brushes.IndianRed;
-
-			MyRotation = new RotateTransform(-90);
+			
 
 			MyLeben = multiplier + 10;
 			MyMass = 10;
@@ -91,7 +90,7 @@ namespace Spiel
 		{
 			if (nachladen == 0)
 			{
-				gegnerTorpedoObjekte.Add(new Torpedo(this, 0, Color.FromArgb(255, 255, 0, 0), 5, 100, 800, 10));
+				gegnerTorpedoObjekte.Add(new Torpedo(this.MyX, this.MyY, -90, Color.FromArgb(255, 255, 0, 0), 5, 100, this.MyXvel - 200, 10));
 				nachladen = 20;
 			}
 			else

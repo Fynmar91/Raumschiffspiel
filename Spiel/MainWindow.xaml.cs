@@ -624,7 +624,7 @@ namespace Spiel
 		{
 			for (int i = 0; i < 360; i += 10)
 			{
-				torpedoObjekte.Add(new Torpedo(p.X - 210, p.Y - 30, i, Color.FromArgb(255, 255, 0, 0), schiffSchaden, 20));
+				torpedoObjekte.Add(new Torpedo(p.X - 210, p.Y - 30, i, Color.FromArgb(255, 255, 0, 0), schiffSchaden * 10 + 50, 20, 1500, 3));
 			}
 		}
 

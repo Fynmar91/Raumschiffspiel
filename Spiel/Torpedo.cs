@@ -26,25 +26,28 @@ namespace Spiel
 			MySchaden = schaden;
 			MyGeschwindigkeit = geschwindigkeit;
 			MyGroesse = groesse;
+			MyLeben = leben;
 
 			umriss.Width = MyGroesse;
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
-			MyLeben = leben;
 
 			MyKollision = new Rect(MyX, MyY, umriss.ActualWidth, umriss.ActualHeight);
 		}
 
-		public Torpedo(double x, double y, int abweichung, Color fabe, double schaden, int leben)
+		public Torpedo(double x, double y, int abweichung, Color fabe, double schaden, int leben, double geschwindigkeit, int groesse)
 			: base(x, y, Math.Cos((-90 + abweichung) * Math.PI / 180) * 1500
 				, Math.Sin((-90 + abweichung) * Math.PI / 180) * 1500,
 				  3, 10)
 		{
-			umriss.Width = 3;
+			MySchaden = schaden;
+			MyGeschwindigkeit = geschwindigkeit;
+			MyGroesse = groesse;
+			MyLeben = leben;
+
+			umriss.Width = MyGroesse;
 			umriss.Height = 10;
 			umriss.Fill = new SolidColorBrush(fabe);
-			MySchaden = schaden * 80;
-			MyLeben = leben;
 		}
 
 		public override bool Zeichne(Canvas zeichenflaeche)
