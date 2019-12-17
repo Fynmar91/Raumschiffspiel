@@ -18,47 +18,9 @@ namespace Spiel
 		public int MyMass { get; set; }
 
 		public Asteroid(Canvas zeichenflaeche, int multiplier, int groesse = 24)
-			: base(zufall.NextDouble() * zeichenflaeche.ActualWidth, zufall.NextDouble() * zeichenflaeche.ActualHeight,
+			: base(zufall.NextDouble() < 0.5 ? zeichenflaeche.ActualWidth : 0, zufall.NextDouble() < 0.5 ? zeichenflaeche.ActualHeight : 0,
 					(zufall.NextDouble() - 0.5) * 800 * (1 + multiplier / 6), (zufall.NextDouble() - 0.5) * 800 * (1 + multiplier / 6))
 		{
-			if (MyX - zeichenflaeche.ActualWidth < MyX)
-			{
-				if ((MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY - zeichenflaeche.ActualHeight
-						&& (MyX - zeichenflaeche.ActualWidth) / 1.6 < MyY)
-				{
-					MyX = zeichenflaeche.ActualWidth;
-				}
-				else
-				{
-					if (MyY - zeichenflaeche.ActualHeight < MyY)
-					{
-						MyY = zeichenflaeche.ActualHeight;
-					}
-					else
-					{
-						MyY = 0;
-					}
-				}
-
-			}
-			else
-			{
-				if (MyX / 1.6 < MyY - zeichenflaeche.ActualHeight && MyX / 1.6 < MyY)
-				{
-					MyX = 0;
-				}
-				else
-				{
-					if (MyY - zeichenflaeche.ActualHeight < MyY)
-					{
-						MyY = zeichenflaeche.ActualHeight;
-					}
-					else
-					{
-						MyY = 0;
-					}
-				}
-			}
 
 			for (int i = 0; i < 20; i++)
 			{
