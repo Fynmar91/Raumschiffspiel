@@ -72,6 +72,9 @@
 		<TextBlock x:Name="textBlock1_Copy" HorizontalAlignment="Right" Margin="0,0,338,67" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>
 		<TextBlock x:Name="textBlock1_Copy1" HorizontalAlignment="Right" Margin="0,0,284,67" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>
 		<TextBlock x:Name="textBlock1_Copy2" HorizontalAlignment="Right" Margin="0,0,230,67" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>
+		<TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="25,417,0,0" TextWrapping="Wrap" Text="Space = Pause" VerticalAlignment="Top" RenderTransformOrigin="-1.245,-0.25" Width="140"/>
+		<TextBlock x:Name="textBlock2_Copy" HorizontalAlignment="Left" Margin="25,375,0,0" TextWrapping="Wrap" Text="Maus 1 = Schießen" VerticalAlignment="Top" RenderTransformOrigin="-1.245,-0.25" Width="140"/>
+		<TextBlock x:Name="textBlock2_Copy1" HorizontalAlignment="Left" Margin="25,396,0,0" TextWrapping="Wrap" Text="Maus 2 = Bombe" VerticalAlignment="Top" RenderTransformOrigin="-1.245,-0.25" Width="140"/>
 
 
 
