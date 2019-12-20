@@ -39,11 +39,11 @@ namespace Spiel
 		Raumschiff raumschiff = null;
 
 		DispatcherTimer timer = new DispatcherTimer();
+		DateTime zeit;
 		static Random zufall = new Random();
 
 		bool spielLaeuft;
 		bool spielPausiert;
-		double zeit;
 		double spawnZeit;
 		int durchlaeufe;
 		int level;
@@ -99,7 +99,7 @@ namespace Spiel
 		{
 			if (spielLaeuft == true)
 			{
-				zeit += 0.02;
+				var momentZeit = DateTime.Now - zeit;
 				spawnZeit -= 1;
 
 				if (raumschiff.MyHP > 0)
@@ -114,7 +114,7 @@ namespace Spiel
 						}
 					}
 
-					if (zeit / durchlaeufe >= 10d)
+					if (momentZeit.TotalSeconds / durchlaeufe >= 10d)
 					{
 						durchlaeufe += 1;
 
@@ -439,7 +439,7 @@ namespace Spiel
 
 		void UpdateText()
 		{
-			textBlock_time.Text = zeit.ToString("0.##");
+			textBlock_time.Text = (DateTime.Now - zeit).TotalSeconds.ToString("0.##");
 			textBlock_score.Text = score.ToString("0.");
 			textBlock_health.Text = raumschiff.MyHP.ToString();
 			prograssBar_health.Value = raumschiff.MyHP;
@@ -520,7 +520,7 @@ namespace Spiel
 		{
 			spielLaeuft = true;
 			spielPausiert = false;
-			zeit = 0;
+			zeit = DateTime.Now;
 			spawnZeit = 0;
 			durchlaeufe = 1;
 			level = 1;
