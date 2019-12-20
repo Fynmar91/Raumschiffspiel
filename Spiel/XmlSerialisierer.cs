@@ -10,13 +10,14 @@ namespace Spiel
 {
 	public class XmlSerialisierer
 	{
-		//string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+		string pfad = Environment.ExpandEnvironmentVariables("%AppData%\\Raumschiffspiel\\");
+		string datei = Environment.ExpandEnvironmentVariables("%AppData%\\Raumschiffspiel\\highscore.xml");
 
 		public void Serialisieren(HighscoreListe ml)
 		{
 			var xml = new XmlSerializer(typeof(HighscoreListe));
-			Directory.CreateDirectory(@"C:\Raumschiffspiel");
-			var stream = new FileStream(@"C:\Raumschiffspiel\highscore.xml", FileMode.OpenOrCreate);
+			Directory.CreateDirectory(pfad);
+			var stream = new FileStream(datei, FileMode.OpenOrCreate);
 			xml.Serialize(stream, ml);
 			stream.Close();
 		}
@@ -27,9 +28,9 @@ namespace Spiel
 			FileStream stream = null;
 			var xml = new XmlSerializer(typeof(HighscoreListe));
 
-			if (File.Exists(@"C:\Raumschiffspiel\highscore.xml"))
+			if (File.Exists(datei))
 			{
-				stream = new FileStream(@"C:\Raumschiffspiel\highscore.xml", FileMode.Open);
+				stream = new FileStream(datei, FileMode.Open);
 				fromFile = xml.Deserialize(stream) as HighscoreListe;
 				stream.Close();
 				return fromFile;

@@ -29,6 +29,8 @@ namespace Spiel
 			InitializeComponent();
 			timer.Interval = TimeSpan.FromSeconds(0.02);
 			timer.Tick += Update;
+
+			Laden();
 		}
 
 		List<Asteroid> asteroidObjekte = new List<Asteroid>();
@@ -221,9 +223,8 @@ namespace Spiel
 				}
 				else if (raumschiff.MyHP <= 0)
 				{
-					highscoreliste.Add(highscore);
-					string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-					ser.Serialisieren(highscoreliste);
+					Speichern();
+					Laden();
 
 					zeichenflaeche.Children.Clear();
 					asteroidObjekte.Clear();
@@ -239,7 +240,6 @@ namespace Spiel
 			}
 		}
 
-		[STAThread]
 		void Animate()
 		{
 			List<Torpedo> abfall_T = new List<Torpedo>();
@@ -474,10 +474,25 @@ namespace Spiel
 			timer.Stop();
 		}
 
-		public void Weiter()
+		void Weiter()
 		{
 			spielPausiert = false;
 			timer.Start();
+		}
+
+		void Speichern()
+		{
+			highscoreliste.Add(highscore);
+			string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+			ser.Serialisieren(highscoreliste);
+		}
+
+		void Laden()
+		{
+			string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+			highscoreliste = ser.Deserialisieren();
+			highscoreliste.Sort((x, y) => y.MyScore.CompareTo(x.MyScore));
+			listView.ItemsSource = highscoreliste;
 		}
 
 		private void Bombe(Point p)
@@ -522,9 +537,7 @@ namespace Spiel
 
 		private void Button_start_Click(object sender, RoutedEventArgs e)
 		{
-			string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-			highscoreliste = ser.Deserialisieren();
-			listView.ItemsSource = highscoreliste;
+			Laden();
 
 			spielLaeuft = true;
 			spielPausiert = false;
