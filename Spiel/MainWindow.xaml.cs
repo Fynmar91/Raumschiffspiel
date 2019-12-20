@@ -43,7 +43,8 @@ namespace Spiel
 		static Random zufall = new Random();
 
 		XmlSerialisierer ser = new XmlSerialisierer();
-		HighscoreListe highscore = new HighscoreListe();
+		HighscoreListe highscoreliste = new HighscoreListe();
+		Highscore highscore = new Highscore();
 
 		bool spielLaeuft;
 		bool spielPausiert;
@@ -220,8 +221,9 @@ namespace Spiel
 				}
 				else if (raumschiff.MyHP <= 0)
 				{
+					highscoreliste.Add(highscore);
 					string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-					ser.Serialisieren(highscore, sPath + @"\Raumschiffspiel\highscore.xml");
+					ser.Serialisieren(highscoreliste);
 
 					zeichenflaeche.Children.Clear();
 					asteroidObjekte.Clear();
@@ -447,6 +449,8 @@ namespace Spiel
 		{
 			textBlock_time.Text = (DateTime.Now - zeit).TotalSeconds.ToString("0.##");
 			textBlock_score.Text = score.ToString("0.");
+			highscore.MyZeit = (DateTime.Now - zeit).TotalSeconds;
+			highscore.MyScore = score;
 			textBlock_health.Text = raumschiff.MyHP.ToString();
 			prograssBar_health.Value = raumschiff.MyHP;
 			textBlock_lebenStein.Text = (durchlaeufe / 4 + 20).ToString();
@@ -525,7 +529,8 @@ namespace Spiel
 		private void Button_start_Click(object sender, RoutedEventArgs e)
 		{
 			string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-			highscore = ser.Deserialisieren(sPath + @"\Raumschiffspiel\highscore.xml");
+			highscoreliste = ser.Deserialisieren();
+			listView.ItemsSource = highscoreliste;
 
 			spielLaeuft = true;
 			spielPausiert = false;

@@ -11,26 +11,25 @@ namespace Spiel
 	public class XmlSerialisierer
 	{
 		//string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-		string sPath = @"C:";
 
-		public void Serialisieren(HighscoreListe ml, string path)
+		public void Serialisieren(HighscoreListe ml)
 		{
 			var xml = new XmlSerializer(typeof(HighscoreListe));
-			Directory.CreateDirectory(path + @"\Raumschiffspiel");
-			var stream = new FileStream(sPath + @"\Raumschiffspiel\highscore.xml", FileMode.Create);
+			Directory.CreateDirectory(@"C:\Raumschiffspiel");
+			var stream = new FileStream(@"C:\Raumschiffspiel\highscore.xml", FileMode.OpenOrCreate);
 			xml.Serialize(stream, ml);
 			stream.Close();
 		}
 
-		public HighscoreListe Deserialisieren(string path)
+		public HighscoreListe Deserialisieren()
 		{
 			HighscoreListe fromFile = new HighscoreListe();
 			FileStream stream = null;
 			var xml = new XmlSerializer(typeof(HighscoreListe));
 
-			if (File.Exists(sPath + @"\Raumschiffspiel\highscore.xml"))
+			if (File.Exists(@"C:\Raumschiffspiel\highscore.xml"))
 			{
-				stream = new FileStream(sPath + @"\Raumschiffspiel\highscore.xml", FileMode.Open);
+				stream = new FileStream(@"C:\Raumschiffspiel\highscore.xml", FileMode.Open);
 				fromFile = xml.Deserialize(stream) as HighscoreListe;
 				stream.Close();
 				return fromFile;

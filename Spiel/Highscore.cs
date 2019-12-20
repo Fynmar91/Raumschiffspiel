@@ -9,5 +9,6 @@ namespace Spiel
 	public class Highscore
 	{
 		public double MyZeit { get; set; }
+		public double MyScore { get; set; }
 	}
 }

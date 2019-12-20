@@ -12,7 +12,7 @@
 			<Canvas x:Name="zeichenflaeche" Background="#FF2B2B2B" Focusable="True" Width="1170" Height="727"/>
 		</Border>
 		<Button x:Name="button_start" Content="Start" Click="Button_start_Click" Height="40" Width="120" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,55" Focusable="False"/>
-		<Grid HorizontalAlignment="Left" Height="100" Margin="535,773,0,-4" VerticalAlignment="Bottom" Width="154">
+		<Grid HorizontalAlignment="Left" Height="87" Margin="535,0,0,-4" VerticalAlignment="Bottom" Width="154">
 			<TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="5,6,0,0" TextWrapping="Wrap" Text="Score" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_score" Margin="0,43,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="98"/>
 		</Grid>
@@ -21,7 +21,7 @@
 			<TextBlock x:Name="textBlock_health" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" FontSize="36" Width="134"/>
 			<ProgressBar x:Name="prograssBar_health" HorizontalAlignment="Left" Height="15" Margin="0,85,0,0" VerticalAlignment="Top" Width="154" Background="#FFE43C3C" Foreground="#FF3DD458"/>
 		</Grid>
-		<Grid HorizontalAlignment="Left" Height="100" Margin="376,769,0,0" VerticalAlignment="Bottom" Width="154">
+		<Grid HorizontalAlignment="Left" Height="83" Margin="376,0,0,0" VerticalAlignment="Bottom" Width="154">
 			<TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Zeit" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_time" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" Width="134"/>
 		</Grid>
@@ -29,7 +29,7 @@
 			<TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="XP" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_xp" Margin="10,42,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="36" HorizontalAlignment="Left" Width="132"/>
 		</Grid>
-		<Grid HorizontalAlignment="Left" Height="100" Margin="224,769,0,0" VerticalAlignment="Bottom" Width="152">
+		<Grid HorizontalAlignment="Left" Height="83" Margin="224,0,0,0" VerticalAlignment="Bottom" Width="152">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="16*"/>
 				<RowDefinition Height="85*"/>
@@ -77,8 +77,13 @@
 		<TextBlock x:Name="textBlock2_Copy1" HorizontalAlignment="Left" Margin="10,411,0,0" TextWrapping="Wrap" Text="Space = Pause" VerticalAlignment="Top" Width="149"/>
 		<TextBlock x:Name="textBlock2_Copy2" HorizontalAlignment="Left" Margin="10,411,0,0" TextWrapping="Wrap" Text="Space = Pause" VerticalAlignment="Top" Width="149"/>
 		<TextBlock x:Name="textBlock2_Copy3" HorizontalAlignment="Left" Margin="10,432,0,0" TextWrapping="Wrap" Text="R = Cheaten" VerticalAlignment="Top" Width="149"/>
-
-
-
+		<ListView x:Name="listView" HorizontalAlignment="Left" Height="389" Margin="10,470,0,0" VerticalAlignment="Top" Width="149">
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="Zeit" Width="60" DisplayMemberBinding="{Binding Path=MyZeit}"/>
+					<GridViewColumn Header="Score" Width="80" DisplayMemberBinding="{Binding Path=MyScore}"/>
+				</GridView>
+			</ListView.View>
+		</ListView>
 	</Grid>
 </Window>
