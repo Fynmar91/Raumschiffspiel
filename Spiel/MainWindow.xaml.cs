@@ -42,6 +42,9 @@ namespace Spiel
 		DateTime zeit;
 		static Random zufall = new Random();
 
+		XmlSerialisierer ser = new XmlSerialisierer();
+		HighscoreListe highscore = new HighscoreListe();
+
 		bool spielLaeuft;
 		bool spielPausiert;
 		double spawnZeit;
@@ -217,6 +220,9 @@ namespace Spiel
 				}
 				else if (raumschiff.MyHP <= 0)
 				{
+					string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+					ser.Serialisieren(highscore, sPath + @"\Raumschiffspiel\highscore.xml");
+
 					zeichenflaeche.Children.Clear();
 					asteroidObjekte.Clear();
 					torpedoObjekte.Clear();
@@ -518,6 +524,9 @@ namespace Spiel
 
 		private void Button_start_Click(object sender, RoutedEventArgs e)
 		{
+			string sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+			highscore = ser.Deserialisieren(sPath + @"\Raumschiffspiel\highscore.xml");
+
 			spielLaeuft = true;
 			spielPausiert = false;
 			zeit = DateTime.Now;
