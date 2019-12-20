@@ -466,12 +466,6 @@ namespace Spiel
 			textBlock_Umlenkung.Text = Convert.ToInt32(umlenkung).ToString();
 			textBlock_Raketen.Text = schiffRaketen.ToString();
 			textBlock_RaketenPreis.Text = MyRaketenPreis.ToString();
-
-
-			textBlock1.Text = asteroidObjekte.Count().ToString();
-			textBlock1_Copy.Text = torpedoObjekte.Count().ToString();
-			textBlock1_Copy1.Text = powerUpObjekte.Count().ToString();
-			textBlock1_Copy2.Text = raketeObjekte.Count().ToString();
 		}
 
 		void Pause()
