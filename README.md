@@ -1,4 +1,4 @@
-# Raumschiffspiel
+# Raumschiffspiel in WPF
 
 ![alt text](https://raw.githubusercontent.com/Fynmar91/Raumschiffspiel/master/1.png)
 
