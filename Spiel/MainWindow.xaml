@@ -16,6 +16,10 @@
 			<TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="5,6,0,0" TextWrapping="Wrap" Text="Score" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_score" Margin="0,43,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="24" HorizontalAlignment="Left" Width="98" Height="30"/>
 		</Grid>
+		<Grid HorizontalAlignment="Left" Height="73" Margin="902,0,0,6" VerticalAlignment="Bottom" Width="154">
+			<TextBlock x:Name="frametime" HorizontalAlignment="Left" Margin="5,6,0,0" TextWrapping="Wrap" Text="Frametime" VerticalAlignment="Top" FontSize="24"/>
+			<TextBlock x:Name="textBlock_frametime" Margin="0,43,0,0" TextWrapping="Wrap" Text="000" VerticalAlignment="Top" FontSize="24" HorizontalAlignment="Left" Width="98" Height="30"/>
+		</Grid>
 		<Grid HorizontalAlignment="Left" Height="100" Margin="25,116,0,0" VerticalAlignment="Top" Width="154">
 			<TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Health" VerticalAlignment="Top" FontSize="24"/>
 			<TextBlock x:Name="textBlock_health" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" FontSize="36" Width="134"/>

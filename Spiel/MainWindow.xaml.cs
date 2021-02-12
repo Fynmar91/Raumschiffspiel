@@ -33,6 +33,8 @@ namespace Spiel
 			Laden();
 		}
 
+		Chunck[,] chunks = new Chunck[3,3];
+
 		List<Asteroid> asteroidObjekte = new List<Asteroid>();
 		List<Torpedo> torpedoObjekte = new List<Torpedo>();
 		List<XpKugel> powerUpObjekte = new List<XpKugel>();
@@ -42,6 +44,7 @@ namespace Spiel
 
 		DispatcherTimer timer = new DispatcherTimer();
 		DateTime zeit;
+		DateTime zeitLetzte;
 		static Random zufall = new Random();
 
 		XmlSerialisierer ser = new XmlSerialisierer();
@@ -68,6 +71,7 @@ namespace Spiel
 		double schiffSchaden;
 		int schiffRaketen;
 		bool umlenkung;
+
 
 		public int MyWaffenPreis
 		{
@@ -277,6 +281,11 @@ namespace Spiel
 				item.Zeichne(zeichenflaeche);
 			}
 
+			foreach (var item in chunks)
+			{
+				item.Zeichne(zeichenflaeche);
+			}
+
 			foreach (var item in abfall_T)
 			{
 				torpedoObjekte.Remove(item);
@@ -334,75 +343,107 @@ namespace Spiel
 			List<XpKugel> abfall_P = new List<XpKugel>();
 			List<Rakete> abfall_R = new List<Rakete>();
 
-			foreach (var asteroid in asteroidObjekte)
+
+			List<Asteroid> asteroidsToCheck = new List<Asteroid>();
+			List<Torpedo> torpedosToCheck = new List<Torpedo>();
+			List<Rakete> raketenToCheck = new List<Rakete>();
+
+			foreach (var chunk in chunks)
 			{
+				foreach (var asteroid in asteroidObjekte)
+				{
+					if (chunk.EnthaeltPunkt(asteroid.MyX, asteroid.MyY))
+					{
+						asteroidsToCheck.Add(asteroid);
+					}
+				}
+
 				foreach (var torpedo in torpedoObjekte)
 				{
-					if (asteroid.EnthaeltPunkt(torpedo.MyX, torpedo.MyY))
+					if (chunk.EnthaeltPunkt(torpedo.MyX, torpedo.MyY))
 					{
-						if (asteroid.Treffer(torpedo.MySchaden))
-						{
-							abfall_A.Add(asteroid);
-
-							if (asteroid is BossAsteroid)
-							{
-								score += 400;
-								xp += 400;
-							}
-							else
-							{
-								score += 40;
-								xp += 40;
-							}
-							break;
-						}
-
-						abfall_T.Add(torpedo);
+						torpedosToCheck.Add(torpedo);
 					}
 				}
 
 				foreach (var rakete in raketeObjekte)
 				{
-					if (asteroid.EnthaeltPunkt(rakete.MyX, rakete.MyY))
+					if (chunk.EnthaeltPunkt(rakete.MyX, rakete.MyY))
 					{
-						if (asteroid.Treffer(rakete.MySchaden))
+						raketenToCheck.Add(rakete);
+					}
+				}
+
+				foreach (var asteroid in asteroidsToCheck)
+				{
+					foreach (var torpedo in torpedosToCheck)
+					{
+						if (asteroid.EnthaeltPunkt(torpedo.MyX, torpedo.MyY))
+						{
+							if (asteroid.Treffer(torpedo.MySchaden))
+							{
+								abfall_A.Add(asteroid);
+
+								if (asteroid is BossAsteroid)
+								{
+									score += 400;
+									xp += 400;
+								}
+								else
+								{
+									score += 40;
+									xp += 40;
+								}
+								break;
+							}
+
+							abfall_T.Add(torpedo);
+						}
+					}
+
+					foreach (var rakete in raketenToCheck)
+					{
+						if (asteroid.EnthaeltPunkt(rakete.MyX, rakete.MyY))
+						{
+							if (asteroid.Treffer(rakete.MySchaden))
+							{
+								abfall_A.Add(asteroid);
+
+								if (asteroid is BossAsteroid)
+								{
+									score += 400;
+									xp += 400;
+								}
+								else
+								{
+									score += 40;
+									xp += 40;
+								}
+								break;
+							}
+
+							abfall_R.Add(rakete);
+						}
+					}
+
+					if (asteroid.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
+					{
+						if (raumschiff.Damage(asteroid.MyMass))
 						{
 							abfall_A.Add(asteroid);
 
-							if (asteroid is BossAsteroid)
+							if (xp > 100)
 							{
-								score += 400;
-								xp += 400;
+								xp -= 100;
 							}
-							else
-							{
-								score += 40;
-								xp += 40;
-							}
-							break;
 						}
-
-						abfall_R.Add(rakete);
-					}
-				}
-
-				if (asteroid.EnthaeltPunkt(raumschiff.MyX, raumschiff.MyY))
-				{
-					if (raumschiff.Damage(asteroid.MyMass))
-					{
-						abfall_A.Add(asteroid);
-
-						if (xp > 100)
+						else
 						{
-							xp -= 100;
+							abfall_A.Add(asteroid);
 						}
 					}
-					else
-					{
-						abfall_A.Add(asteroid);
-					}
 				}
-			}
+			}			
 
 			foreach (var item in powerUpObjekte)
 			{
@@ -466,6 +507,8 @@ namespace Spiel
 			textBlock_Umlenkung.Text = Convert.ToInt32(umlenkung).ToString();
 			textBlock_Raketen.Text = schiffRaketen.ToString();
 			textBlock_RaketenPreis.Text = MyRaketenPreis.ToString();
+			textBlock_frametime.Text = (DateTime.Now - zeitLetzte).Milliseconds.ToString();
+			zeitLetzte = DateTime.Now;
 		}
 
 		void Pause()
@@ -562,6 +605,15 @@ namespace Spiel
 			prograssBar_health.Value = 100;
 			border.Background = Brushes.Black;
 			raumschiff = new Raumschiff(zeichenflaeche);
+
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					chunks[i, j] = new Chunck(zeichenflaeche, zeichenflaeche.ActualWidth / 3 * i, zeichenflaeche.ActualHeight / 3 * j);
+				}
+			}			
+
 			timer.Start();
 
 			for (int i = 0; i < 4; i++)
